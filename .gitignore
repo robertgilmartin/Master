@@ -30,3 +30,11 @@
 *.exe
 *.out
 *.app
+.vs/
+Debug/
+Game/
+MahtGeoLib/
+SDL/
+glew-2.1.0/
+imGUI/
+

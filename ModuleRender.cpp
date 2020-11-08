@@ -5,6 +5,7 @@
 #include "SDL.h"
 #include "GL/glew.h"
 #include "MahtGeoLib/Geometry/Frustum.h"
+#include "ModuleProgram.h"
 
 ModuleRender::ModuleRender()
 {
@@ -26,9 +27,10 @@ bool ModuleRender::Init()
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);												// we want a double buffer
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);													// we want to have a depth buffer with 24 bits
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);												// we want to have a stencil buffer with 8 bits
+	
 
 	SDL_GL_CreateContext(App->window->window);
-
+		
 	glEnable(GL_DEPTH_TEST);																	// Enable depth test
 	glEnable(GL_CULL_FACE);																		// Enable cull backward faces
 	glFrontFace(GL_CCW);																		// Front faces will be counter clockwise
@@ -44,6 +46,10 @@ bool ModuleRender::Init()
 	LOG("Using Glew %s", glewGetString(GLEW_VERSION));
 	// Should be 2.0
 
+	float vtx_data[] = { -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f };	
+	glGenBuffers(1, &vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, vbo); // set vbo active
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vtx_data), vtx_data, GL_STATIC_DRAW);
 
 	return true;
 }
@@ -60,13 +66,21 @@ update_status ModuleRender::PreUpdate()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	
+
 	return UPDATE_CONTINUE;
 }
 
 // Called every draw update
 update_status ModuleRender::Update()
-{
-
+{	
+	glEnableVertexAttribArray(0);
+	// size = 3 float per vertex
+	// stride = 0 is equivalent to stride = sizeof(float)*3
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glUseProgram(App->program->program);
+	// 1 triangle to draw = 3 vertices
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 	return UPDATE_CONTINUE;
 }
 
@@ -82,7 +96,7 @@ bool ModuleRender::CleanUp()
 	LOG("Destroying renderer");
 
 	//Destroy window
-
+	glDeleteBuffers(1, &vbo);
 	return true;
 }
 

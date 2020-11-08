@@ -8,6 +8,7 @@ struct SDL_Rect;
 
 class ModuleRender : public Module
 {
+
 public:
 	ModuleRender();
 	~ModuleRender();
@@ -20,5 +21,7 @@ public:
 	void WindowResized(unsigned width, unsigned height);
 
 private:
+	unsigned vbo;
 	void* context;
+	
 };

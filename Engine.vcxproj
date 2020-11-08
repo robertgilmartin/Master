@@ -217,6 +217,7 @@
     <ClInclude Include="MahtGeoLib\Time\Clock.h" />
     <ClInclude Include="Module.h" />
     <ClInclude Include="ModuleInput.h" />
+    <ClInclude Include="ModuleProgram.h" />
     <ClInclude Include="ModuleRender.h" />
     <ClInclude Include="ModuleWindow.h" />
   </ItemGroup>
@@ -267,6 +268,7 @@
     <ClCompile Include="MahtGeoLib\Time\Clock.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ModuleInput.cpp" />
+    <ClCompile Include="ModuleProgram.cpp" />
     <ClCompile Include="ModuleRender.cpp" />
     <ClCompile Include="ModuleWindow.cpp" />
   </ItemGroup>
@@ -278,6 +280,8 @@
     <None Include="MahtGeoLib\Geometry\TriangleMesh_IntersectRay_SSE.inl" />
     <None Include="MahtGeoLib\Math\float2.inl" />
     <None Include="MahtGeoLib\Math\Matrix.inl" />
+    <None Include="Shaders\fragmentShader.glsl" />
+    <None Include="Shaders\vertexShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
