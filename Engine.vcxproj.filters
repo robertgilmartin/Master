@@ -134,6 +134,9 @@
       <Filter>MatheGeoLib\Time</Filter>
     </ClCompile>
     <ClCompile Include="ModuleProgram.cpp" />
+    <ClCompile Include="DebugDraw\ModuleDebugDraw.cpp">
+      <Filter>DebugDraw</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -359,6 +362,15 @@
       <Filter>MatheGeoLib\Time</Filter>
     </ClInclude>
     <ClInclude Include="ModuleProgram.h" />
+    <ClInclude Include="DebugDraw\debug_draw.hpp">
+      <Filter>DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugDraw\debugdraw.h">
+      <Filter>DebugDraw</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugDraw\ModuleDebugDraw.h">
+      <Filter>DebugDraw</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MatheGeoLib">
@@ -378,6 +390,9 @@
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{ac6ef6af-229d-4090-89fd-c9429bc04566}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DebugDraw">
+      <UniqueIdentifier>{1e1db457-18c8-4242-8110-5849a3676a8d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -142,6 +142,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
+    <ClInclude Include="DebugDraw\debugdraw.h" />
+    <ClInclude Include="DebugDraw\debug_draw.hpp" />
+    <ClInclude Include="DebugDraw\ModuleDebugDraw.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="MahtGeoLib\Algorithm\GJK.h" />
     <ClInclude Include="MahtGeoLib\Algorithm\GJK2D.h" />
@@ -223,6 +226,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="DebugDraw\ModuleDebugDraw.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="MahtGeoLib\Algorithm\GJK.cpp" />
     <ClCompile Include="MahtGeoLib\Algorithm\GJK2D.cpp" />
