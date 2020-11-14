@@ -8,6 +8,8 @@ class ModuleRender;
 class ModuleWindow;
 class ModuleTextures;
 class ModuleInput;
+class ModuleCamera;
+//class ModuleEditor;
 class ModuleRenderExercice;
 class ModuleProgram;
 class ModuleDebugDraw;
@@ -28,6 +30,8 @@ public:
 	ModuleRenderExercice* exercice = nullptr;
 	ModuleWindow* window = nullptr;
 	ModuleInput* input = nullptr;
+	ModuleCamera* camera = nullptr;
+	/*ModuleEditor* editor = nullptr;*/
 	ModuleProgram* program = nullptr;
 	ModuleDebugDraw* debugDraw = nullptr;
 

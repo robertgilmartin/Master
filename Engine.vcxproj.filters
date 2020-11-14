@@ -138,6 +138,8 @@
       <Filter>DebugDraw</Filter>
     </ClCompile>
     <ClCompile Include="ModuleRenderExercice.cpp" />
+    <ClCompile Include="ModuleCamera.cpp" />
+    <ClCompile Include="ModuleEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -373,6 +375,8 @@
       <Filter>DebugDraw</Filter>
     </ClInclude>
     <ClInclude Include="ModuleRenderExercice.h" />
+    <ClInclude Include="ModuleCamera.h" />
+    <ClInclude Include="ModuleEditor.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MatheGeoLib">
