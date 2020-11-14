@@ -137,6 +137,7 @@
     <ClCompile Include="DebugDraw\ModuleDebugDraw.cpp">
       <Filter>DebugDraw</Filter>
     </ClCompile>
+    <ClCompile Include="ModuleRenderExercice.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -371,6 +372,7 @@
     <ClInclude Include="DebugDraw\ModuleDebugDraw.h">
       <Filter>DebugDraw</Filter>
     </ClInclude>
+    <ClInclude Include="ModuleRenderExercice.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MatheGeoLib">

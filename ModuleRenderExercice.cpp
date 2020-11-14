@@ -4,7 +4,6 @@
 #include "ModuleWindow.h"
 #include "SDL.h"
 #include "GL/glew.h"
-
 #include "ModuleProgram.h"
 
 
@@ -47,34 +46,12 @@ bool ModuleRenderExercice::Init()
 	LOG("Using Glew %s", glewGetString(GLEW_VERSION));
 	// Should be 2.0
 
-	frustum.SetKind(FrustumSpaceGL, FrustumRightHanded);
-	frustum.SetHorizontalFovAndAspectRatio(DEGTORAD(90.0f), 1.3f);
-	frustum.SetViewPlaneDistances(0.1f, 200.0f);
-
-	frustum.SetPos(cameraPos);
-	frustum.SetFront(cameraFront);
-	frustum.SetUp(cameraUp);
-
+	
 	float vtx_data[] = { -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo); // set vbo active
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vtx_data), vtx_data, GL_STATIC_DRAW);
-
-	//Projection
-	float4x4 projectionGL = frustum.ProjectionMatrix().Transposed();
-
-	//View
-	viewMatrix = frustum.ViewMatrix();
-	viewMatrix.Transpose();
-
-	//Model
-	float4x4 model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f),
-		float4x4::RotateZ(pi / 4.0f),
-		float3(2.0f, 1.0f, 0.0f));
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(*(projectionGL.v));
-
+		
 	return true;
 }
 
@@ -89,7 +66,6 @@ update_status ModuleRenderExercice::PreUpdate()
 	glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	
 
 	return UPDATE_CONTINUE;
