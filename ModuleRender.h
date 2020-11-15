@@ -11,6 +11,7 @@ class ModuleRender : public Module
 {
 public:
 	SDL_GLContext glContext;
+	
 
 public:
 	ModuleRender();
