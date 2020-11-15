@@ -1,5 +1,5 @@
 #pragma once
-#include "assimp/scene.h"
+#include "Assimp/include/assimp/scene.h"
 #include <vector>
 #include "Mesh.h"
 #include "Module.h"
