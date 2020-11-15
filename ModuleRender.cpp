@@ -69,6 +69,7 @@ update_status ModuleRender::PreUpdate()
 // Called every draw update
 update_status ModuleRender::Update()
 {	
+	
 	glLineWidth(1.0f);
 	float d = 200.0f;
 

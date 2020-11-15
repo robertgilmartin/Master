@@ -5,6 +5,10 @@
 #include "SDL.h"
 #include "GL/glew.h"
 #include "ModuleProgram.h"
+#include "ModuleCamera.h"
+#include "ModuleTexture.h"
+#include "Model.h"
+#include "./DebugDraw/ModuleDebugDraw.h"
 
 
 ModuleRenderExercice::ModuleRenderExercice()
@@ -44,13 +48,12 @@ bool ModuleRenderExercice::Init()
 	GLenum err = glewInit();
 	// … check for errors
 	LOG("Using Glew %s", glewGetString(GLEW_VERSION));
-	// Should be 2.0
+	// Should be 2.0	
+	/*
+	float vtx_data[] = { -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 
+						0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f };*/
 
-	
-	float vtx_data[] = { -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f };
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo); // set vbo active
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vtx_data), vtx_data, GL_STATIC_DRAW);
+	App->model->Load("BakerHouse.fbx");	
 		
 	return true;
 }
@@ -67,6 +70,7 @@ update_status ModuleRenderExercice::PreUpdate()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	program = App->program->program;
 
 	return UPDATE_CONTINUE;
 }
@@ -74,16 +78,16 @@ update_status ModuleRenderExercice::PreUpdate()
 // Called every draw update
 update_status ModuleRenderExercice::Update()
 {	
-	glEnableVertexAttribArray(0);
-	// size = 3 float per vertex
-	// stride = 0 is equivalent to stride = sizeof(float)*3
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glUseProgram(App->program->program);
-	// 1 triangle to draw = 3 vertices
-	glDrawArrays(GL_TRIANGLES, 0, 3);
-	
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(*(viewMatrix.v));
+	int w, h;
+	SDL_GetWindowSize(App->window->window, &w, &h);
+
+	App->debugDraw->Draw(App->camera->viewMatrix(), App->camera->projectionMatrix(), w, h);
+
+	App->model->Draw();
+
+	/*RenderTriangle();*/
+
+
 	return UPDATE_CONTINUE;
 }
 
@@ -99,11 +103,38 @@ bool ModuleRenderExercice::CleanUp()
 	LOG("Destroying renderer");
 
 	//Destroy window
-	/*glDeleteBuffers(1, &vbo);*/
+	glDeleteBuffers(1, &vbo);
 	return true;
 }
 
 void ModuleRenderExercice::WindowResized(unsigned width, unsigned height)
 {
+}
+
+void ModuleRenderExercice::RenderTriangle()
+{		
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);	
+	glEnableVertexAttribArray(0);	
+	glEnableVertexAttribArray(1);
+	
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0,(void*)(sizeof(float) * 3 * 3));
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, App->texture->LoadTexture("Lenna.png"));
+	glUniform1i(glGetUniformLocation(program, "mytexture"), 0);
+
+	float4x4 model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f), 
+		float4x4::RotateZ(pi / 4.0f),
+		float3(2.0f, 1.0f, 0.0f));
+	float4x4 view = App->camera->viewMatrix();
+	float4x4 projection = App->camera->projectionMatrix();
+
+	glUseProgram(program);
+	glUniformMatrix4fv(glGetUniformLocation(program, "model"), 1, GL_TRUE, &model[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(program, "view"), 1, GL_TRUE, &view[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, &projection[0][0]);
+	
+	glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 

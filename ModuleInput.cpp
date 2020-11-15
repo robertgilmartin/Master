@@ -6,9 +6,11 @@
 #include "SDL/include/SDL.h"
 #include "ModuleCamera.h"
 
+
 //#include "imGUI/imgui.h"
 //#include "imGUI/imgui_impl_sdl.h"
 //#include "imGUI/imgui_impl_opengl3.h"
+
 
 ModuleInput::ModuleInput()
 {}
@@ -25,6 +27,7 @@ bool ModuleInput::CheckKey(SDL_Scancode key)
 
     return keyboard[key];
 }
+
 
 // Called before render is available
 bool ModuleInput::Init()
@@ -61,32 +64,36 @@ update_status ModuleInput::Update()
             if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED || sdlEvent.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
                 App->renderer->WindowResized(sdlEvent.window.data1, sdlEvent.window.data2);
             break;
-        case SDL_MOUSEWHEEL:
-            if (sdlEvent.wheel.y > 0) // scroll up
+        //case SDL_MOUSEWHEEL:
+        //    if (sdlEvent.wheel.y > 0) // scroll up
+        //    {
+        //        App->camera->MoveForward();
+        //    }
+        //    else if (sdlEvent.wheel.y < 0) // scroll down
+        //    {
+        //        App->camera->MoveBackwards();
+        //    }
+        /*case SDL_MOUSEBUTTONDOWN:
+            if (SDL_BUTTON_LEFT)
             {
-                App->camera->MoveForward();
-            }
-            else if (sdlEvent.wheel.y < 0) // scroll down
-            {
-                App->camera->MoveBackwards();
-            }
-        case SDL_MOUSEBUTTONDOWN:
-            if (SDL_BUTTON(SDL_BUTTON_LEFT))
-            {
-                if (sdlEvent.motion.xrel > xMousePos)
-                {
-                    App->camera->MoveToTheRight();
-                }
-                if (sdlEvent.motion.xrel < xMousePos)
-                {
-                    App->camera->MoveToTheLeft();
-                }
-                //TRANSLATION
-            }
-            if (sdlEvent.button.button == SDL_BUTTON_RIGHT)
-            {
-                //ROTATION
-            }
+                App->camera->MouseMotionInput(sdlEvent.motion.xrel, sdlEvent.motion.yrel);
+            }*/
+            //if (SDL_BUTTON(SDL_BUTTON_LEFT))
+            //{
+            //    if (sdlEvent.motion.xrel > xMousePos)
+            //    {
+            //        App->camera->MoveToTheRight();
+            //    }
+            //    if (sdlEvent.motion.xrel < xMousePos)
+            //    {
+            //        App->camera->MoveToTheLeft();
+            //    }
+            //    //TRANSLATION
+            //}
+        //    if (sdlEvent.button.button == SDL_BUTTON_RIGHT)
+        //    {
+        //        //ROTATION
+        //    }
 
         }
         //EDITOOORR!!!
