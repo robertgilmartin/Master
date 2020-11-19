@@ -143,6 +143,24 @@
     <ClCompile Include="ModuleTexture.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="imGUI\imgui.cpp">
+      <Filter>imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\imgui_demo.cpp">
+      <Filter>imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\imgui_draw.cpp">
+      <Filter>imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\imgui_impl_opengl3.cpp">
+      <Filter>imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\imgui_impl_sdl.cpp">
+      <Filter>imGUI</Filter>
+    </ClCompile>
+    <ClCompile Include="imGUI\imgui_widgets.cpp">
+      <Filter>imGUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h" />
@@ -383,6 +401,30 @@
     <ClInclude Include="ModuleTexture.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Mesh.h" />
+    <ClInclude Include="imGUI\imconfig.h">
+      <Filter>imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imgui.h">
+      <Filter>imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imgui_impl_opengl3.h">
+      <Filter>imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imgui_impl_sdl.h">
+      <Filter>imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imgui_internal.h">
+      <Filter>imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imstb_rectpack.h">
+      <Filter>imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imstb_textedit.h">
+      <Filter>imGUI</Filter>
+    </ClInclude>
+    <ClInclude Include="imGUI\imstb_truetype.h">
+      <Filter>imGUI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MatheGeoLib">
@@ -405,6 +447,9 @@
     </Filter>
     <Filter Include="DebugDraw">
       <UniqueIdentifier>{1e1db457-18c8-4242-8110-5849a3676a8d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imGUI">
+      <UniqueIdentifier>{e5245646-b384-4b1b-a109-90cc4527237c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

@@ -109,7 +109,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalIncludeDirectories>./Assimp/include;./DevIL/include;./glew-2.1.0/include;./SDL/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./imGUI;./Assimp/include;./DevIL/include;./glew-2.1.0/include;./SDL/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -145,6 +145,14 @@
     <ClInclude Include="DebugDraw\debug_draw.hpp" />
     <ClInclude Include="DebugDraw\ModuleDebugDraw.h" />
     <ClInclude Include="Globals.h" />
+    <ClInclude Include="imGUI\imconfig.h" />
+    <ClInclude Include="imGUI\imgui.h" />
+    <ClInclude Include="imGUI\imgui_impl_opengl3.h" />
+    <ClInclude Include="imGUI\imgui_impl_sdl.h" />
+    <ClInclude Include="imGUI\imgui_internal.h" />
+    <ClInclude Include="imGUI\imstb_rectpack.h" />
+    <ClInclude Include="imGUI\imstb_textedit.h" />
+    <ClInclude Include="imGUI\imstb_truetype.h" />
     <ClInclude Include="MahtGeoLib\Algorithm\GJK.h" />
     <ClInclude Include="MahtGeoLib\Algorithm\GJK2D.h" />
     <ClInclude Include="MahtGeoLib\Algorithm\Random\LCG.h" />
@@ -232,6 +240,12 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="DebugDraw\ModuleDebugDraw.cpp" />
+    <ClCompile Include="imGUI\imgui.cpp" />
+    <ClCompile Include="imGUI\imgui_demo.cpp" />
+    <ClCompile Include="imGUI\imgui_draw.cpp" />
+    <ClCompile Include="imGUI\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="imGUI\imgui_impl_sdl.cpp" />
+    <ClCompile Include="imGUI\imgui_widgets.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="MahtGeoLib\Algorithm\GJK.cpp" />
     <ClCompile Include="MahtGeoLib\Algorithm\GJK2D.cpp" />

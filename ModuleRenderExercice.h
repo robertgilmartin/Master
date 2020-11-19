@@ -1,9 +1,11 @@
 #pragma once
 #include "Module.h"
+#include "SDL.h"
 
 class ModuleRenderExercice : public Module
 {
-
+public:
+	SDL_GLContext glContext;
 public:
 	ModuleRenderExercice();
 	~ModuleRenderExercice();

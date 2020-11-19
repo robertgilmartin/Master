@@ -9,7 +9,7 @@ class ModuleWindow;
 class ModuleTextures;
 class ModuleInput;
 class ModuleCamera;
-//class ModuleEditor;
+class ModuleEditor;
 class ModuleRenderExercice;
 class ModuleProgram;
 class ModuleDebugDraw;
@@ -33,7 +33,7 @@ public:
 	ModuleWindow* window = nullptr;
 	ModuleInput* input = nullptr;
 	ModuleCamera* camera = nullptr;
-	/*ModuleEditor* editor = nullptr;*/
+	ModuleEditor* editor = nullptr;
 	ModuleProgram* program = nullptr;
 	ModuleDebugDraw* debugDraw = nullptr;
 	ModuleTexture* texture = nullptr;
