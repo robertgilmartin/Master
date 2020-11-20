@@ -3,13 +3,10 @@
 
 #include "MahtGeoLib/Geometry/Frustum.h" 
 
-
-
 class ModuleCamera : public Module
 {
 public:
-	ModuleCamera();	
-	void UpdateFrustum();
+	ModuleCamera();		
 	bool Init();
 	update_status Update();
 	void SetInitUpFrontRight();
@@ -18,23 +15,24 @@ public:
 	float4x4 projectionMatrix();
 	float4x4 viewMatrix();
 	void MouseMotionInput(float xoffset, float offset);
-	void RotateCamera(float3& axis, float angle);
+	void WheelTransformation(int wheel);
 	bool CleanUp();
 	virtual ~ModuleCamera();
+
 
 private:
 
 	Frustum frustum;	
-	float3 cameraPos = float3(0, 1, -4);
+	float3 cameraPos = float3(0, 2, -10);
 	float3 Front = float3::unitZ;
 	float3 WorldUp = float3::unitY;
 	float3 Up;	
 	float3 Right;	
-	float nearPlane = 0.1f;
-	float farPlane = 200.0f;	
+	float nearPlane{ 0.1f };
+	float farPlane{ 200.0f };
 	float aspectRatio = SCREEN_WIDTH/SCREEN_HEIGHT;
-	float yaw;
-	float pitch;
+	float yaw{ -90.0f };
+	float pitch{ 0.0f };
 
 	
 };

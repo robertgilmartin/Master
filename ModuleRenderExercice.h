@@ -17,6 +17,7 @@ public:
 	bool CleanUp();
 	void WindowResized(unsigned width, unsigned height);
 	void RenderTriangle();
+	void RotateCameraMouse(float xoffset, float yoffset);
 
 private:
 	

@@ -425,6 +425,7 @@
     <ClInclude Include="imGUI\imstb_truetype.h">
       <Filter>imGUI</Filter>
     </ClInclude>
+    <ClInclude Include="Point.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MatheGeoLib">

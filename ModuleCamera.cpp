@@ -36,17 +36,6 @@ void ModuleCamera::SetFrustum()
 	frustum.SetUp(Up);
 }
 
-void ModuleCamera::UpdateFrustum()
-{
-	frustum.SetKind(FrustumSpaceGL, FrustumRightHanded);
-	frustum.SetViewPlaneDistances(nearPlane, farPlane);
-	frustum.SetHorizontalFovAndAspectRatio(DEGTORAD(90.0f), aspectRatio);
-
-	frustum.SetPos(cameraPos);
-	frustum.SetFront(Front);
-	frustum.SetUp(Up);
-}
-
 float4x4 ModuleCamera::modelMatrix()
 {
 	float4x4 model = float4x4::FromTRS(float3(2.0f, 0.0f, 0.0f), float4x4::RotateZ(pi / 4.0f), float3(2.0f, 1.0f, 0.0f));
@@ -85,14 +74,19 @@ update_status ModuleCamera::Update()
 	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(*(viewMatrix().v));
-	
-	
+			
 	float cameraSpeed = 0.05f;//DeltaTime Ongoing
-
+	
+	
+	//if (App->input->GetKey(SDL_BUTTON_LEFT) == KEY_REPEAT)
+	//{
+	//	MouseMotionInput(App->input->GetMouseMotion().x, App->input->GetMouseMotion().y);
+	//	/*cameraPos += Front * cameraSpeed;*/
+	//	/*frustum.SetPos(cameraPos);*/
+	//}
 	if (App->input->CheckKey(SDL_SCANCODE_W))
 	{
 		cameraPos += Front * cameraSpeed;
-		/*frustum.SetPos(cameraPos);*/
 	}
 
 	if (App->input->CheckKey(SDL_SCANCODE_S))
@@ -144,6 +138,7 @@ update_status ModuleCamera::Update()
 		Front = rotationMatrix * Front;
 		Up = rotationMatrix * Up;
 		Right = rotationMatrix * Right;		
+		rotationMatrix.MulDir(Up);
 	}
 
 	if (App->input->CheckKey(SDL_SCANCODE_UP))
@@ -155,38 +150,40 @@ update_status ModuleCamera::Update()
 		Right = rotationMatrix * Right;
 	}
 
-	UpdateFrustum();
+	SetFrustum();
 
 	return UPDATE_CONTINUE;
 }
-//void ModuleCamera::MouseMotionInput(float xoffset, float yoffset)
-//{
-//	float oldPitch = pitch;
-//	float sensitivity = 0.1f;
-//	xoffset *= sensitivity;
-//	yoffset *= sensitivity;
-//
-//	yaw += xoffset;
-//	pitch += yoffset;
-//
-//	if (pitch > 89.0f)
-//		pitch = 89.0f;
-//	if (pitch < -89.0f)
-//		pitch = -89.0f;
-//
-//	RotateCamera(Right, pitch - oldPitch);
-//	RotateCamera(WorldUp, -xoffset);
-//}
-//
-//
-//void ModuleCamera::RotateCamera(float3& axis, float angle)
-//{
-//	Quat rotationMatrix = Quat(axis, DEGTORAD(angle));
-//
-//	Front = rotationMatrix * Front;
-//	Up = rotationMatrix * Up;
-//	Right = rotationMatrix * Right;
-//}
+void ModuleCamera::WheelTransformation(int wheel)
+{
+	cameraPos += Front * wheel * 0.5;
+}
+
+
+void ModuleCamera::MouseMotionInput(float xoffset, float yoffset)
+{	
+	/*float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;*/
+	yaw += xoffset;
+	pitch += yoffset;
+
+	if (pitch > 89.0f)
+		pitch = 89.0f;
+	if (pitch < -89.0f)
+		pitch = -89.0f;
+
+	float3 direction;
+	direction.x = cos(DEGTORAD(yaw)) * cos(DEGTORAD(pitch));
+	direction.y = sin(DEGTORAD(pitch));
+	direction.z = sin(DEGTORAD(yaw)) * cos(DEGTORAD(pitch));
+
+	Front = direction/*.Normalized()*/;
+	Right = Cross(Front, WorldUp)/*.Normalized()*/;
+	Up = Cross(Right, Front)/*.Normalized()*/;
+
+	SetFrustum();
+}
 
 // Called before quitting
 bool ModuleCamera::CleanUp()

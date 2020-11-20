@@ -39,7 +39,7 @@ bool ModuleRenderExercice::Init()
 	glEnable(GL_DEPTH_TEST);																	// Enable depth test
 	glEnable(GL_CULL_FACE);																		// Enable cull backward faces
 	glFrontFace(GL_CCW);																		// Front faces will be counter clockwise
-	glEnable(SDL_WINDOW_RESIZABLE);
+	
 
 
 	LOG("Vendor: %s", glGetString(GL_VENDOR));
@@ -139,5 +139,14 @@ void ModuleRenderExercice::RenderTriangle()
 	glUniformMatrix4fv(glGetUniformLocation(program, "proj"), 1, GL_TRUE, &projection[0][0]);
 	
 	glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+void ModuleRenderExercice::RotateCameraMouse(float xoffset, float yoffset)
+{
+	if (SDL_GetRelativeMouseMode() == SDL_FALSE) 
+	{		
+		SDL_SetRelativeMouseMode(SDL_TRUE);
+	}
+	App->camera->MouseMotionInput(xoffset, yoffset);
 }
 

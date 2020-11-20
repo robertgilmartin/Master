@@ -5,11 +5,12 @@
 #include "ModuleWindow.h"
 #include "SDL/include/SDL.h"
 #include "ModuleCamera.h"
+#include "ModuleRenderExercice.h"
 
 
-//#include "imGUI/imgui.h"
-//#include "imGUI/imgui_impl_sdl.h"
-//#include "imGUI/imgui_impl_opengl3.h"
+#include "imGUI/imgui.h"
+#include "imGUI/imgui_impl_sdl.h"
+#include "imGUI/imgui_impl_opengl3.h"
 
 
 ModuleInput::ModuleInput()
@@ -44,68 +45,82 @@ bool ModuleInput::Init()
 
 	return ret;
 }
+update_status ModuleInput::PreUpdate()
+{
+    for (int i = 0; i < NUM_MOUSE_BUTTONS; ++i)
+    {
+        if (mouse_buttons[i] == KEY_DOWN)
+            mouse_buttons[i] = KEY_REPEAT;
+
+        if (mouse_buttons[i] == KEY_UP)
+            mouse_buttons[i] = KEY_IDLE;
+    }
+    return UPDATE_CONTINUE;
+}
+
 
 // Called every draw update
 update_status ModuleInput::Update()
 {
     SDL_Event sdlEvent;
 
+    mouse_motion = { 0, 0 };
 
-    int xMousePos = 0;
-    int yMousePos = 0;
+    wheel = 0;
 
     while (SDL_PollEvent(&sdlEvent) != 0)
     {
         switch (sdlEvent.type)
         {
         case SDL_QUIT:
-            return UPDATE_STOP;
+            return UPDATE_STOP;        
         case SDL_WINDOWEVENT:
             if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED || sdlEvent.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
                 App->renderer->WindowResized(sdlEvent.window.data1, sdlEvent.window.data2);
             break;
-        //case SDL_MOUSEWHEEL:
-        //    if (sdlEvent.wheel.y > 0) // scroll up
-        //    {
-        //        App->camera->MoveForward();
-        //    }
-        //    else if (sdlEvent.wheel.y < 0) // scroll down
-        //    {
-        //        App->camera->MoveBackwards();
-        //    }
-        /*case SDL_MOUSEBUTTONDOWN:
-            if (SDL_BUTTON_LEFT)
+        
+        case SDL_MOUSEBUTTONDOWN:                
+            mouse_buttons[sdlEvent.button.button] = KEY_DOWN;
+            break;
+
+        case SDL_MOUSEBUTTONUP:            
+            mouse_buttons[sdlEvent.button.button - 1] = KEY_UP;
+            break;      
+
+        case SDL_MOUSEMOTION:
+            mouse_motion.x = sdlEvent.motion.xrel;
+            mouse_motion.y = sdlEvent.motion.yrel;
+            /*if (SDL_BUTTON_LEFT == KEY_REPEAT)
             {
-                App->camera->MouseMotionInput(sdlEvent.motion.xrel, sdlEvent.motion.yrel);
+                App->camera->MouseMotionInput(sdlEvent.motion.xrel, -sdlEvent.motion.yrel);
             }*/
-            //if (SDL_BUTTON(SDL_BUTTON_LEFT))
-            //{
-            //    if (sdlEvent.motion.xrel > xMousePos)
-            //    {
-            //        App->camera->MoveToTheRight();
-            //    }
-            //    if (sdlEvent.motion.xrel < xMousePos)
-            //    {
-            //        App->camera->MoveToTheLeft();
-            //    }
-            //    //TRANSLATION
-            //}
-        //    if (sdlEvent.button.button == SDL_BUTTON_RIGHT)
-        //    {
-        //        //ROTATION
-        //    }
+            
 
+        /*case SDL_MOUSEWHEEL:
+            if (sdlEvent.wheel.y > 0) {
+                App->camera->WheelTransformation(1);
+            }
+            else if (sdlEvent.wheel.y < 0) {
+                App->camera->WheelTransformation(-1);
+            }            
+            break;*/
+            
+           
+            /*if (CheckKey(SDL_SCANCODE_LALT) == KEY_REPEAT)
+                App->camera->MouseMotionInput(sdlEvent.motion.xrel, -sdlEvent.motion.yrel);                
+            break;*/
         }
-        //EDITOOORR!!!
 
-       /* ImGui_ImplSDL2_ProcessEvent(&sdlEvent);
+       //EDITOR
+       ImGui_ImplSDL2_ProcessEvent(&sdlEvent);
         if (sdlEvent.type == SDL_QUIT)
             break;
         if (sdlEvent.type == SDL_WINDOWEVENT && sdlEvent.window.event == SDL_WINDOWEVENT_CLOSE && sdlEvent.window.windowID == SDL_GetWindowID(App->window->window))
-            break;*/
+            break;        
     }
 
-    keyboard = SDL_GetKeyboardState(NULL);
+    
+    /*keyboard = SDL_GetKeyboardState(NULL);*/
 
     return UPDATE_CONTINUE;
 }
@@ -116,4 +131,12 @@ bool ModuleInput::CleanUp()
 	LOG("Quitting SDL input event subsystem");
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 	return true;
+}
+int ModuleInput::GetWheelState()
+{
+    return wheel;
+}
+const iPoint& ModuleInput::GetMouseMotion() const
+{
+    return mouse_motion;
 }
