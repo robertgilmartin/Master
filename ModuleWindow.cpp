@@ -68,3 +68,49 @@ bool ModuleWindow::CleanUp()
 	return true;
 }
 
+void ModuleWindow::WindowConfiguration(SDL_WindowFlags flag, bool state)
+{
+	switch (flag)
+	{
+	case SDL_WINDOW_FULLSCREEN:
+		SDL_SetWindowFullscreen(window, state);
+		break;
+
+	case SDL_WINDOW_FULLSCREEN_DESKTOP:
+		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		break;
+
+	case SDL_WINDOW_RESIZABLE:
+		SDL_SetWindowResizable(window, (SDL_bool) state);
+		break;
+
+	case SDL_WINDOW_BORDERLESS:
+		if (state)
+		{
+			SDL_SetWindowBordered(window, SDL_TRUE);
+			break;
+		}
+		else
+		{
+			SDL_SetWindowBordered(window, SDL_FALSE);
+			break;
+		}
+		
+	default:
+		break;
+	}
+	/*SDL_DisplayMode desktopMode;
+	if (SDL_GetDesktopDisplayMode(0, &desktopMode) == 0)
+		SDL_SetWindowDisplayMode(window, &desktopMode)*/;
+}
+
+void ModuleWindow::Brightness(float brightness)
+{
+	SDL_SetWindowBrightness(window, brightness);
+}
+
+void ModuleWindow::WidhtHeightResizable(int width, int height)
+{
+	SDL_SetWindowSize(window, width, height);
+}
+

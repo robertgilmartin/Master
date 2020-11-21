@@ -1,6 +1,6 @@
 #pragma once
 #include "Module.h"
-
+#include "imGUI/imgui.h"
 
 class ModuleEditor : public Module
 {
@@ -19,10 +19,15 @@ public:
 public:
 	void ShowAboutWindow();
 	void GoToGitHub();
+	void Configuration();
+
+	void Log(const char* fmt);
 
 
 private:
-	char* buf = "Hello";
-	float f{ 0.0f };
+	
+	ImGuiTextBuffer buf;
+	bool scrollToBottom;	
+	
 };
 #define va_start __crt_va_start

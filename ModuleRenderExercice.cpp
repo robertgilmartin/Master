@@ -8,11 +8,16 @@
 #include "ModuleCamera.h"
 #include "ModuleTexture.h"
 #include "Model.h"
+#include "ModuleEditor.h"
 #include "./DebugDraw/ModuleDebugDraw.h"
+#include "Assimp/cimport.h"
+#include <iostream>
 
 
-ModuleRenderExercice::ModuleRenderExercice()
+ModuleRenderExercice::ModuleRenderExercice():
+	MAX_FPS{ 60.0f }
 {
+	
 }
 
 // Destructor
@@ -20,9 +25,15 @@ ModuleRenderExercice::~ModuleRenderExercice()
 {
 }
 
+void myCallback(const char* msg, char* userData) 
+{
+	App->editor->Log(msg);		
+}
+
 // Called before render is available
 bool ModuleRenderExercice::Init()
 {
+
 	LOG("Creating Renderer context");
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);										// desired version
@@ -54,8 +65,11 @@ bool ModuleRenderExercice::Init()
 	/*
 	float vtx_data[] = { -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 
 						0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f };*/
+	struct aiLogStream stream;
+	stream.callback = myCallback;
+	aiAttachLogStream(&stream);
 
-	App->model->Load("BakerHouse.fbx");	
+	App->model->Load("BakerHouse.fbx");		
 		
 	return true;
 }
@@ -79,7 +93,8 @@ update_status ModuleRenderExercice::PreUpdate()
 
 // Called every draw update
 update_status ModuleRenderExercice::Update()
-{	
+{		
+	float starTicks = SDL_GetTicks();
 	int w, h;
 	SDL_GetWindowSize(App->window->window, &w, &h);
 
@@ -87,9 +102,15 @@ update_status ModuleRenderExercice::Update()
 
 	App->model->Draw();
 
-	/*RenderTriangle();*/
-
-
+	//FPS
+	CalculateFPS();	
+	
+	float frameTicks = SDL_GetTicks() - starTicks;
+	//Limit FPS
+	if (1000.0f / MAX_FPS > frameTicks)
+	{
+		SDL_Delay(1000.0f / MAX_FPS - frameTicks);
+	}
 	return UPDATE_CONTINUE;
 }
 
@@ -148,5 +169,53 @@ void ModuleRenderExercice::RotateCameraMouse(float xoffset, float yoffset)
 		SDL_SetRelativeMouseMode(SDL_TRUE);
 	}
 	App->camera->MouseMotionInput(xoffset, yoffset);
+}
+
+float ModuleRenderExercice::CalculateFPS()
+{	
+	static const int NUM_SAMPLES = 10;
+	static float frameTimes[NUM_SAMPLES];
+	static int currentFrame = 0;
+
+	static float prevTicks = SDL_GetTicks();
+
+	float currentTicks;
+	currentTicks = SDL_GetTicks();
+
+	frameTime = currentTicks - prevTicks;
+	frameTimes[currentFrame % NUM_SAMPLES] = frameTime;
+
+	prevTicks = currentTicks;
+
+	int count;
+
+	currentFrame++;
+	if (currentFrame < NUM_SAMPLES)
+	{
+		count = currentFrame;
+	}
+	else
+	{
+		count = NUM_SAMPLES;
+	}
+	
+	float frameTimeAverage = 0;
+
+	for (int i = 0; i < count; i++)
+	{
+		frameTimeAverage += frameTimes[i];
+	}
+	frameTimeAverage /= count;
+	
+	if (frameTimeAverage > 0)
+	{
+		FPS = 1000.0f / frameTimeAverage;
+	}
+	else
+	{
+		FPS = 60.0f;
+	}	
+
+	return FPS;
 }
 

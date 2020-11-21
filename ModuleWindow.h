@@ -3,6 +3,7 @@
 
 #include "Module.h"
 #include "SDL/include/SDL.h"
+#include "SDL/include/SDL_video.h"
 
 class Application;
 
@@ -20,6 +21,12 @@ public:
 
 	// Called before quitting
 	bool CleanUp();
+
+	void WindowConfiguration(SDL_WindowFlags flag, bool state);
+
+	void Brightness(float brightness);
+
+	void WidhtHeightResizable(int width, int height);
 
 public:
 	//The window we'll be rendering to

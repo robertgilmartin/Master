@@ -19,9 +19,18 @@ public:
 	void RenderTriangle();
 	void RotateCameraMouse(float xoffset, float yoffset);
 
+	float CalculateFPS();
+
 private:
 	
 	unsigned vbo;
 	unsigned int program;
+
+public:
+	double elapsedSeconds{ 0 };	
+	float FPS;
+	float frameTime;
+	float MAX_FPS;
+
 #define DEGTORAD(angleDegrees) ((angleDegrees) * M_PI / 180.0)
 };
