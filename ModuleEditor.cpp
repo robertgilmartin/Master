@@ -5,11 +5,16 @@
 #include "ModuleRenderExercice.h"
 #include "ModuleWindow.h"
 
+#include "glew-2.1.0/include/GL/glew.h"
 
 #include "imGUI/imgui_impl_sdl.h"
 #include "imGUI/imgui_impl_opengl3.h"
 
 #include <shellapi.h>
+
+#include <string>
+#include <vector>
+
 
 ModuleEditor::ModuleEditor()
 {}
@@ -44,6 +49,8 @@ update_status ModuleEditor::Update()
     static bool show_app_about = false;
     static bool go_to_GitHub = false;
     static bool show_app_config = false;    
+
+    
 
     //Console
     {
@@ -238,7 +245,89 @@ void ModuleEditor::Configuration()
         {
             App->window->WidhtHeightResizable(width, height);
         }
-    }    
+    }   
+    if (ImGui::CollapsingHeader("Hardware"))
+    {        
+        ImGui::Text("SDL Version: ");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "   2.0");
+
+        ImGui::Text("OpenGL Version: ");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "2.1.0");
+
+        ImGui::Text("DevIL version: ");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), " 1.8.0");
+
+        ImGui::Separator();               
+
+        std::string s = std::to_string(SDL_GetCPUCount());
+        char const* CPUCores = s.c_str();  
+        
+        std::string t = std::to_string(SDL_GetCPUCacheLineSize());
+        char const* CPUCache = t.c_str();
+
+        ImGui::Text("CPUs:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), CPUCores);
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "(Cache:");        
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), CPUCache);
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "kB)");
+         
+        std::string r = std::to_string(SDL_GetSystemRAM()/1000);
+        char const* RAM = r.c_str();
+
+        ImGui::Text("System RAM:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), RAM);
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "GB");
+                
+        std::string cps;
+                
+        if (SDL_HasAVX()) { cps.append("AVX, "); }
+        if (SDL_HasAVX2()) { cps.append("AVX2, "); }
+        if (SDL_HasAltiVec()) { cps.append("AltiVec, "); }
+        if (SDL_HasMMX()) { cps.append("MMX, "); }
+        if (SDL_HasRDTSC()) { cps.append("RDTSC, "); }
+        if (SDL_HasSSE()) { cps.append("SSE, "); }
+        if (SDL_HasSSE2()) { cps.append("SSE2, "); }
+        if (SDL_HasSSE3()) { cps.append("SSE3, "); }
+        if (SDL_HasSSE41()) { cps.append("SSE41, "); }
+        if (SDL_HasSSE42()) { cps.append("SSE42 "); }
+
+        char const* Caps = cps.c_str();
+
+        ImGui::Text("Caps:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), Caps);
+
+        ImGui::Separator();
+
+        const GLubyte* vendor = glGetString(GL_VENDOR); 
+        const GLubyte* renderer = glGetString(GL_RENDERER); 
+        const GLubyte* version = glGetString(GL_VERSION);
+        
+        ImGui::Text("GPU:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), reinterpret_cast<const char*>(vendor));
+
+        ImGui::Text("Brand:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), reinterpret_cast<const char*>(renderer));
+
+        ImGui::Text("Version:");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), reinterpret_cast<const char*>(version));
+
+        ImGui::Separator();
+        
+        
+    }
 
     ImGui::End();
 }
