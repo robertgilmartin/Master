@@ -30,6 +30,7 @@ bool ModuleEditor::Init()
     ImGui::CreateContext();
     ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->exercice->glContext);
     ImGui_ImplOpenGL3_Init();
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
     return true;
 }
@@ -45,26 +46,56 @@ update_status ModuleEditor::PreUpdate()
 
 
 update_status ModuleEditor::Update()
-{    
-    static bool show_app_about = false;
-    static bool go_to_GitHub = false;
-    static bool show_app_config = false;    
+{              
+    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_PassthruCentralNode;
 
-    
-
-    //Console
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking;
     {
-        
-        ImGui::Begin("Console");   
-        ImGui::TextUnformatted(buf.begin());
+        ImGuiViewport* viewport = ImGui::GetMainViewport();
+        ImGui::SetNextWindowPos(viewport->GetWorkPos());
+        ImGui::SetNextWindowSize(viewport->GetWorkSize());
+        ImGui::SetNextWindowViewport(viewport->ID);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+        window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
+        window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus | ImGuiWindowFlags_NoBackground;
 
-        if (scrollToBottom) 
+        if (dockspace_flags & ImGuiDockNodeFlags_PassthruCentralNode)
+            window_flags |= ImGuiWindowFlags_NoBackground;
+
+        ImGui::Begin("DockSpace Demo", NULL, window_flags);
+
+        ImGui::PopStyleVar(2);
+
+        ImGuiIO& io = ImGui::GetIO();
+
+        if (io.ConfigFlags & ImGuiConfigFlags_DockingEnable)
         {
-            ImGui::SetScrollHere(1.0f);
-        }        
-        scrollToBottom = false;
+            ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+            ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+        }
+        else
+        {
+            ShowDockingDisabledMessage();
+        }
 
         ImGui::End();
+    }
+    //Console
+    {
+        if (close_console)
+        {
+            ImGui::Begin("Console", &close_console);
+            ImGui::TextUnformatted(buf.begin());
+
+            if (scrollToBottom)
+            {
+                ImGui::SetScrollHere(1.0f);
+            }
+            scrollToBottom = false;
+
+            ImGui::End();
+        }        
     }
     
     //MenuBar
@@ -81,15 +112,22 @@ update_status ModuleEditor::Update()
             }
             ImGui::EndMenu();
         }
-
+        
         //Tools
         if (ImGui::BeginMenu("Tools"))
         {
             //Configuration
-            ImGui::MenuItem("Configuration", NULL, &show_app_config);           
+            ImGui::MenuItem("Configuration", NULL, &show_app_config);            
             ImGui::EndMenu();
         }
 
+        //View
+        if (ImGui::BeginMenu("View"))
+        {
+            //Console
+            ImGui::MenuItem("Console", NULL, &close_console);
+            ImGui::EndMenu();
+        }
         //Help
         if (ImGui::BeginMenu("Help"))
         {
@@ -97,14 +135,13 @@ update_status ModuleEditor::Update()
             ImGui::MenuItem("GitHub",NULL, &go_to_GitHub);
             ImGui::EndMenu();
         }        
-
-
         ImGui::EndMainMenuBar();
     }
 
     if (show_app_about) { ShowAboutWindow(); }
     if (go_to_GitHub) { GoToGitHub(); }
     if (show_app_config) { Configuration(); }
+
     ImGui::ShowDemoWindow();
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());   
@@ -130,13 +167,20 @@ bool ModuleEditor::CleanUp()
 
 void ModuleEditor::ShowAboutWindow()
 {    
-    ImGui::Begin("About");
-     
+    static bool close = true;
+
+    ImGui::Begin("About", &close);
+    
     ImGui::Text("Engine: Nothing to see here.\n");
     ImGui::Text("This is a non-informatic-engineer-Engine, I tryed it.\n");
     ImGui::Text("This Engine is made by Robert Gil Martin.\n");
     ImGui::Text("Libraries:\nSDL.lib\nglew2.1.0.lib\nassimp-vc141-mt.lib\nDevIL.lib\nILU.lib\nILUT.lib\n");
     ImGui::Text("License: MIT License");
+
+    if (close == false)
+    {
+        show_app_about = false;
+    }
 
     ImGui::End();
 }
@@ -148,6 +192,8 @@ void ModuleEditor::GoToGitHub()
 
 void ModuleEditor::Configuration()
 {
+
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
     //Configuration window
     static bool fullscreen = false;
     static bool fullscreen_desktop = false;
@@ -166,7 +212,7 @@ void ModuleEditor::Configuration()
     static double refresh_time = 0.0;
     
 
-    ImGui::Begin("Configuration");
+    ImGui::Begin("Configuration", &show_app_config);
     ImGui::Text("Options");
 
     if (ImGui::CollapsingHeader("Application"))
@@ -247,14 +293,38 @@ void ModuleEditor::Configuration()
         }
     }   
     if (ImGui::CollapsingHeader("Hardware"))
-    {        
+    {      
+        SDL_version linked;
+
+        SDL_GetVersion(&linked);
+
+        std::string maj = std::to_string(linked.major);
+        char const* major = maj.c_str();
+
+        std::string min = std::to_string(linked.minor);
+        char const* minor = min.c_str();
+
+        std::string ptc = std::to_string(linked.patch);
+        char const* patch = ptc.c_str();
+
         ImGui::Text("SDL Version: ");
         ImGui::SameLine();
-        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "   2.0");
+        /*ImGui::TextColored2(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), major, minor, patch);*/
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), major);
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), ".");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), minor);
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), ".");
+        ImGui::SameLine();
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), patch);
 
+        const GLubyte* versionGL = glGetString(GL_VERSION);
+        
         ImGui::Text("OpenGL Version: ");
         ImGui::SameLine();
-        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "2.1.0");
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), reinterpret_cast<const char*>(versionGL));
 
         ImGui::Text("DevIL version: ");
         ImGui::SameLine();
@@ -310,23 +380,16 @@ void ModuleEditor::Configuration()
 
         const GLubyte* vendor = glGetString(GL_VENDOR); 
         const GLubyte* renderer = glGetString(GL_RENDERER); 
-        const GLubyte* version = glGetString(GL_VERSION);
-        
+                
         ImGui::Text("GPU:");
-        ImGui::SameLine();
-        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), reinterpret_cast<const char*>(vendor));
-
-        ImGui::Text("Brand:");
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), reinterpret_cast<const char*>(renderer));
 
-        ImGui::Text("Version:");
+        ImGui::Text("Brand:");
         ImGui::SameLine();
-        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), reinterpret_cast<const char*>(version));
-
-        ImGui::Separator();
-        
-        
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), reinterpret_cast<const char*>(vendor));
+                
+        ImGui::Separator();         
     }
 
     ImGui::End();
@@ -341,5 +404,13 @@ void ModuleEditor::Log(const char* fmt)
     scrollToBottom = true;
 }
 
-
+void ModuleEditor::ShowDockingDisabledMessage()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    ImGui::Text("ERROR: Docking is not enabled! See Demo > Configuration.");
+    ImGui::Text("Set io.ConfigFlags |= ImGuiConfigFlags_DockingEnable in your code, or ");
+    ImGui::SameLine(0.0f, 0.0f);
+    if (ImGui::SmallButton("click here"))
+        io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+}
 

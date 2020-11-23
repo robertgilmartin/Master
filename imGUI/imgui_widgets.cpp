@@ -263,6 +263,18 @@ void ImGui::TextV(const char* fmt, va_list args)
     TextEx(g.TempBuffer, text_end, ImGuiTextFlags_NoWidthForLargeClippedText);
 }
 
+void ImGui::TextColored2(const ImVec4& col, const char* fmt, const char* fmt2, const char* fmt3)
+{
+    va_list args;
+    va_start(args, fmt);
+    TextColoredV(col, fmt, args);
+    va_start(args, fmt2);
+    TextColoredV(col, fmt2, args);
+    va_start(args, fmt3);
+    TextColoredV(col, fmt3, args);
+    va_end(args);
+}
+
 void ImGui::TextColored(const ImVec4& col, const char* fmt, ...)
 {
     va_list args;

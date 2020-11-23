@@ -20,7 +20,6 @@ ModuleRenderExercice::ModuleRenderExercice():
 	
 }
 
-// Destructor
 ModuleRenderExercice::~ModuleRenderExercice()
 {
 }
