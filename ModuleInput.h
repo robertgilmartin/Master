@@ -33,10 +33,12 @@ public:
 	int GetWheelState();
 	const iPoint& GetMouseMotion() const;
 	
-	
+	void GetModelPath(char* path);
+
 public:
 	iPoint mouse_motion;
 	int wheel;
+	char* dropFilePath;
 
 private:
 	const Uint8 *keyboard = NULL;	

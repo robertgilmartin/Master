@@ -6,6 +6,7 @@
 #include "SDL/include/SDL.h"
 #include "ModuleCamera.h"
 #include "ModuleRenderExercice.h"
+#include "Model.h"
 
 
 #include "imGUI/imgui.h"
@@ -90,6 +91,7 @@ update_status ModuleInput::Update()
         case SDL_MOUSEMOTION:
             mouse_motion.x = sdlEvent.motion.xrel;
             mouse_motion.y = sdlEvent.motion.yrel;
+            break;
             /*if (SDL_BUTTON_LEFT == KEY_REPEAT)
             {
                 App->camera->MouseMotionInput(sdlEvent.motion.xrel, -sdlEvent.motion.yrel);
@@ -109,6 +111,13 @@ update_status ModuleInput::Update()
             /*if (CheckKey(SDL_SCANCODE_LALT) == KEY_REPEAT)
                 App->camera->MouseMotionInput(sdlEvent.motion.xrel, -sdlEvent.motion.yrel);                
             break;*/
+
+        case SDL_DROPFILE:
+            dropFilePath = sdlEvent.drop.file;
+            GetModelPath(dropFilePath);
+            SDL_free(dropFilePath);    
+            break;
+
         }
 
        //EDITOR
@@ -139,4 +148,14 @@ int ModuleInput::GetWheelState()
 const iPoint& ModuleInput::GetMouseMotion() const
 {
     return mouse_motion;
+}
+
+void ModuleInput::GetModelPath(char* path)
+{
+    App->model->Load(path);
+}
+
+void ModuleInput::DeletePreviousScene()
+{
+
 }

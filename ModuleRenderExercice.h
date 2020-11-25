@@ -17,12 +17,10 @@ public:
 	bool CleanUp();
 	void WindowResized(unsigned width, unsigned height);
 	void RenderTriangle();
-	void RotateCameraMouse(float xoffset, float yoffset);
-
+	void RotateCameraMouse(float xoffset, float yoffset);	
 	float CalculateFPS();
 
-private:
-	
+private:	
 	unsigned vbo;
 	unsigned int program;
 

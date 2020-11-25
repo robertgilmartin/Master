@@ -70,6 +70,10 @@ unsigned ModuleTexture::LoadTexture(const char* filename)
         ilGetInteger(IL_IMAGE_HEIGHT), 0, ilGetInteger(IL_IMAGE_FORMAT), GL_UNSIGNED_BYTE,
         ilGetData());
 
+    //Mipmaping -->Editor --To do
+
+
+    //Mag/min --> Editor to do
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
