@@ -5,18 +5,17 @@
 #include "ModuleTexture.h"
 #include "Application.h"
 
+
 Model::Model()
 {
-
 }
-Model::~Model()
-{
 
-}
 
 void Model::Load(const char* filename)
 {
-	const aiScene* scene = aiImportFile(filename, aiProcessPreset_TargetRealtime_MaxQuality);
+	/*scene = aiImportFile(filename, aiProcessPreset_TargetRealtime_MaxQuality);*/
+	const aiScene* scene = import.ReadFile(filename, aiProcessPreset_TargetRealtime_MaxQuality);
+	
 	if (scene)
 	{
 		LoadTexture(scene);
@@ -25,7 +24,7 @@ void Model::Load(const char* filename)
 	else
 	{
 		LOG("Error loading %s: %s", filename, aiGetErrorString());
-	}
+	}	
 }
 void Model::LoadTexture(const aiScene* scene)
 {
@@ -57,7 +56,13 @@ void Model::LoadMeshes(const aiScene* scene)
 
 void Model::Draw() 
 {
-	for (unsigned i = 0; i < meshes.size(); ++i) {
+	for (unsigned i = 0; i < meshes.size(); ++i) 
+	{
 		meshes[i].Draw(materials);
 	}
+}
+
+void Model::DeleteScene()
+{
+	import.FreeScene();
 }

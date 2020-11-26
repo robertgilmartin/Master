@@ -32,7 +32,7 @@ public:
 	bool CleanUp();	
 	int GetWheelState();
 	const iPoint& GetMouseMotion() const;
-	
+	void DeletePreviousScene();
 	void GetModelPath(char* path);
 
 public:

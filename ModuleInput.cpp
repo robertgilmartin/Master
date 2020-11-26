@@ -113,8 +113,18 @@ update_status ModuleInput::Update()
             break;*/
 
         case SDL_DROPFILE:
+            /*App->model->DeleteScene();*/
             dropFilePath = sdlEvent.drop.file;
             GetModelPath(dropFilePath);
+
+            //No pilla bé el path
+            SDL_ShowSimpleMessageBox(
+                SDL_MESSAGEBOX_INFORMATION,
+                "File dropped on window",
+                dropFilePath, App->window->window);
+
+            //Delete previous 
+            
             SDL_free(dropFilePath);    
             break;
 
@@ -127,7 +137,6 @@ update_status ModuleInput::Update()
         if (sdlEvent.type == SDL_WINDOWEVENT && sdlEvent.window.event == SDL_WINDOWEVENT_CLOSE && sdlEvent.window.windowID == SDL_GetWindowID(App->window->window))
             break;        
     }
-
     
     /*keyboard = SDL_GetKeyboardState(NULL);*/
 
@@ -157,5 +166,8 @@ void ModuleInput::GetModelPath(char* path)
 
 void ModuleInput::DeletePreviousScene()
 {
+    if (true)
+    {
 
+    }
 }
