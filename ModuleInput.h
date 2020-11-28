@@ -30,8 +30,7 @@ public:
 	update_status PreUpdate();
 	update_status Update();
 	bool CleanUp();	
-	int GetWheelState();
-	const iPoint& GetMouseMotion() const;
+	
 	void DeletePreviousScene();
 	void GetModelPath(char* path);
 
@@ -39,10 +38,12 @@ public:
 	iPoint mouse_motion;
 	int wheel;
 	char* dropFilePath;
+	bool Lpressed = false;
+	bool Rpressed = false;
 
 private:
 	const Uint8 *keyboard = NULL;	
-	KeyState mouse_buttons[NUM_MOUSE_BUTTONS];
+	
 	
 };
 

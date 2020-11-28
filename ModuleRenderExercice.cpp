@@ -101,6 +101,8 @@ update_status ModuleRenderExercice::Update()
 
 	App->model->Draw();
 
+	
+
 	//FPS
 	CalculateFPS();	
 	

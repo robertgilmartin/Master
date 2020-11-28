@@ -3,11 +3,13 @@
 #include "ModuleInput.h"
 #include "ModuleRender.h"
 #include "ModuleCamera.h"
+#include "ModuleRenderExercice.h"
 #include "SDL.h"
 #include "glew-2.1.0/include/GL/glew.h"
 #include "MahtGeoLib/Geometry/Frustum.h"
 #include "MahtGeoLib/Math/float3x3.h"
 #include "MahtGeoLib/Math/Quat.h"
+#include "MahtGeoLib/Time/Clock.h"
 
 
 ModuleCamera::ModuleCamera()
@@ -52,8 +54,7 @@ float4x4 ModuleCamera::projectionMatrix()
 
 float4x4 ModuleCamera::viewMatrix()
 {
-	float4x4 viewMatrix = frustum.ViewMatrix();
-	/*viewMatrix.Transpose();*/
+	float4x4 viewMatrix = frustum.ViewMatrix();	
 
 	return viewMatrix;
 }
@@ -75,97 +76,61 @@ update_status ModuleCamera::Update()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(*(viewMatrix().v));
 			
-	float cameraSpeed = 0.05f;//DeltaTime Ongoing
-	
-	
-	//if (App->input->GetKey(SDL_BUTTON_LEFT) == KEY_REPEAT)
-	//{
-	//	MouseMotionInput(App->input->GetMouseMotion().x, App->input->GetMouseMotion().y);
-	//	/*cameraPos += Front * cameraSpeed;*/
-	//	/*frustum.SetPos(cameraPos);*/
-	//}
-	if (App->input->CheckKey(SDL_SCANCODE_W))
+	MovementSpeed();	
+
+	if (App->input->Rpressed)
 	{
-		cameraPos += Front * cameraSpeed;
-	}
+		if (App->input->CheckKey(SDL_SCANCODE_W))
+		{
+			cameraPos += Front * movementSpeed;
+		}
+		if (App->input->CheckKey(SDL_SCANCODE_S))
+		{
+			cameraPos -= Front * movementSpeed;
+		}
 
-	if (App->input->CheckKey(SDL_SCANCODE_S))
+		if (App->input->CheckKey(SDL_SCANCODE_A))
+		{
+			cameraPos -= Right * movementSpeed;
+		}
+
+		if (App->input->CheckKey(SDL_SCANCODE_D))
+		{
+			cameraPos += Right * movementSpeed;
+		}
+	}	
+
+	if (App->input->CheckKey(SDL_SCANCODE_F))
 	{
-		cameraPos -= Front * cameraSpeed;
+		cameraPos = float3(0, 2, -10);
 	}
 
-	if (App->input->CheckKey(SDL_SCANCODE_A))
+	if (App->input->CheckKey(SDL_SCANCODE_LALT) && App->input->Lpressed)
 	{
-		cameraPos -= Right * cameraSpeed;
-	}
+		SetInitUpFrontRight();
+		cameraPos = float3(0, 2, -10);		
+		orbit = true;
+	} 
 
-	if (App->input->CheckKey(SDL_SCANCODE_D))
+	if (orbit)
 	{
-		cameraPos += Right * cameraSpeed;
-	}
-	if (App->input->CheckKey(SDL_SCANCODE_Q))
-	{
-		cameraPos += Up * cameraSpeed;
-	}
-
-	if (App->input->CheckKey(SDL_SCANCODE_E))
-	{
-		cameraPos -= Up * cameraSpeed;
-	}
-	if (App->input->CheckKey(SDL_SCANCODE_LEFT))
-	{						
-		float3x3 rotationMatrix = float3x3::RotateY(1 * cameraSpeed);
-
-		Front = rotationMatrix * Front;
-		Right = rotationMatrix * Right;
-		Up = rotationMatrix * Up;
-		
-	}
-
-	if (App->input->CheckKey(SDL_SCANCODE_RIGHT))
-	{		
-		float3x3 rotationMatrix = float3x3::RotateY(-1 * cameraSpeed);
-
-		Front = rotationMatrix * Front;
-		Up = rotationMatrix * Up;
-		Right = Cross(Front, Up);
-	}
-
-	if (App->input->CheckKey(SDL_SCANCODE_DOWN))
-	{
-		float3x3 rotationMatrix = float3x3::RotateX(1 * cameraSpeed);
-
-		Front = rotationMatrix * Front;
-		Up = rotationMatrix * Up;
-		Right = rotationMatrix * Right;		
-		rotationMatrix.MulDir(Up);
-	}
-
-	if (App->input->CheckKey(SDL_SCANCODE_UP))
-	{
-		float3x3 rotationMatrix = float3x3::RotateX(-1 * cameraSpeed);
-
-		Front = rotationMatrix * Front;
-		Up = rotationMatrix * Up;
-		Right = rotationMatrix * Right;
+		Orbit();
 	}
 
 	SetFrustum();
+	orbit = false;
 
 	return UPDATE_CONTINUE;
 }
-void ModuleCamera::WheelTransformation(int wheel)
-{
-	cameraPos += Front * wheel * 0.5;
-}
-
 
 void ModuleCamera::MouseMotionInput(float xoffset, float yoffset)
-{	
-	/*float sensitivity = 0.1f;
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;*/
-	yaw += xoffset;
+{		
+	xoffset *= movementSpeed;
+	yoffset *= movementSpeed;
+
+	float oldpitch = pitch;
+
+	yaw += xoffset; 
 	pitch += yoffset;
 
 	if (pitch > 89.0f)
@@ -173,22 +138,51 @@ void ModuleCamera::MouseMotionInput(float xoffset, float yoffset)
 	if (pitch < -89.0f)
 		pitch = -89.0f;
 
-	float3 direction;
-	direction.x = cos(DEGTORAD(yaw)) * cos(DEGTORAD(pitch));
-	direction.y = sin(DEGTORAD(pitch));
-	direction.z = sin(DEGTORAD(yaw)) * cos(DEGTORAD(pitch));
-
-	Front = direction/*.Normalized()*/;
-	Right = Cross(Front, WorldUp)/*.Normalized()*/;
-	Up = Cross(Right, Front)/*.Normalized()*/;
+	CameraRotation(Right, pitch - oldpitch);
+	CameraRotation(WorldUp, -xoffset);
 
 	SetFrustum();
 }
 
-// Called before quitting
+
+void ModuleCamera::CameraRotation(float3& axis, float angle)
+{
+	Quat rotationMatrix = Quat(axis, DEGTORAD(angle));
+
+	Front = rotationMatrix * Front;
+	Up = rotationMatrix * Up;
+	Right = rotationMatrix * Right;
+}
+
 bool ModuleCamera::CleanUp()
 {
 	LOG("Destroying camera");
 
 	return true;
+}
+
+void ModuleCamera::MovementSpeed()
+{
+	movementSpeed = 4 * (1/ App->exercice->FPS);
+
+	if (App->input->CheckKey(SDL_SCANCODE_LSHIFT))
+	{
+		movementSpeed *= 2;
+	}
+}
+
+void ModuleCamera::Orbit()
+{
+	const float radius = 10.0f;
+	cameraPos.x = sin(SDL_GetTicks()/500) * radius;
+	cameraPos.z = cos(SDL_GetTicks()/500) * radius;
+
+	float4x4 view;
+	view = float3x3::LookAt(float3(cameraPos.x, 0, cameraPos.z), float3(0, 0, 0), Up, WorldUp);
+}
+
+void ModuleCamera::WheelTransformation(int wheel)
+{		
+	movementSpeed *= 2;
+	cameraPos += wheel * Front * movementSpeed;
 }

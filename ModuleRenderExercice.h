@@ -29,6 +29,7 @@ public:
 	float FPS;
 	float frameTime;
 	float MAX_FPS;
+	float deltaTime = 0.0f;
 
 #define DEGTORAD(angleDegrees) ((angleDegrees) * M_PI / 180.0)
 };

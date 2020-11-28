@@ -21,16 +21,6 @@ ModuleInput::ModuleInput()
 ModuleInput::~ModuleInput()
 {}
 
-bool ModuleInput::CheckKey(SDL_Scancode key)
-{
-    SDL_PumpEvents();
-
-    keyboard = SDL_GetKeyboardState(NULL);
-
-    return keyboard[key];
-}
-
-
 // Called before render is available
 bool ModuleInput::Init()
 {
@@ -47,15 +37,7 @@ bool ModuleInput::Init()
 	return ret;
 }
 update_status ModuleInput::PreUpdate()
-{
-    for (int i = 0; i < NUM_MOUSE_BUTTONS; ++i)
-    {
-        if (mouse_buttons[i] == KEY_DOWN)
-            mouse_buttons[i] = KEY_REPEAT;
-
-        if (mouse_buttons[i] == KEY_UP)
-            mouse_buttons[i] = KEY_IDLE;
-    }
+{    
     return UPDATE_CONTINUE;
 }
 
@@ -74,43 +56,38 @@ update_status ModuleInput::Update()
         switch (sdlEvent.type)
         {
         case SDL_QUIT:
-            return UPDATE_STOP;        
+            return UPDATE_STOP; 
+
         case SDL_WINDOWEVENT:
             if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED || sdlEvent.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
                 App->renderer->WindowResized(sdlEvent.window.data1, sdlEvent.window.data2);
             break;
-        
-        case SDL_MOUSEBUTTONDOWN:                
-            mouse_buttons[sdlEvent.button.button] = KEY_DOWN;
+                    
+        case SDL_MOUSEBUTTONUP:
+            if (sdlEvent.button.button == SDL_BUTTON_LEFT) { Lpressed = false; }
+            if (sdlEvent.button.button == SDL_BUTTON_RIGHT) { Rpressed = false; }
             break;
 
-        case SDL_MOUSEBUTTONUP:            
-            mouse_buttons[sdlEvent.button.button - 1] = KEY_UP;
-            break;      
-
+        case SDL_MOUSEBUTTONDOWN: 
+            if (sdlEvent.button.button == SDL_BUTTON_LEFT) { Lpressed = true; } 
+            if (sdlEvent.button.button == SDL_BUTTON_RIGHT) { Rpressed = true; }
+            break;
+        
         case SDL_MOUSEMOTION:
             mouse_motion.x = sdlEvent.motion.xrel;
             mouse_motion.y = sdlEvent.motion.yrel;
             break;
-            /*if (SDL_BUTTON_LEFT == KEY_REPEAT)
-            {
-                App->camera->MouseMotionInput(sdlEvent.motion.xrel, -sdlEvent.motion.yrel);
-            }*/
-            
 
-        /*case SDL_MOUSEWHEEL:
-            if (sdlEvent.wheel.y > 0) {
+        case SDL_MOUSEWHEEL:
+            if (sdlEvent.wheel.y > 0) 
+            {
                 App->camera->WheelTransformation(1);
             }
-            else if (sdlEvent.wheel.y < 0) {
+            else if (sdlEvent.wheel.y < 0) 
+            {
                 App->camera->WheelTransformation(-1);
             }            
-            break;*/
-            
-           
-            /*if (CheckKey(SDL_SCANCODE_LALT) == KEY_REPEAT)
-                App->camera->MouseMotionInput(sdlEvent.motion.xrel, -sdlEvent.motion.yrel);                
-            break;*/
+            break;            
 
         case SDL_DROPFILE:
             /*App->model->DeleteScene();*/
@@ -127,7 +104,6 @@ update_status ModuleInput::Update()
             
             SDL_free(dropFilePath);    
             break;
-
         }
 
        //EDITOR
@@ -136,9 +112,12 @@ update_status ModuleInput::Update()
             break;
         if (sdlEvent.type == SDL_WINDOWEVENT && sdlEvent.window.event == SDL_WINDOWEVENT_CLOSE && sdlEvent.window.windowID == SDL_GetWindowID(App->window->window))
             break;        
-    }
+    }    
     
-    /*keyboard = SDL_GetKeyboardState(NULL);*/
+    if (Lpressed)
+    {
+        App->camera->MouseMotionInput(mouse_motion.x, -mouse_motion.y);
+    }
 
     return UPDATE_CONTINUE;
 }
@@ -150,14 +129,15 @@ bool ModuleInput::CleanUp()
 	SDL_QuitSubSystem(SDL_INIT_EVENTS);
 	return true;
 }
-int ModuleInput::GetWheelState()
+bool ModuleInput::CheckKey(SDL_Scancode key)
 {
-    return wheel;
+    SDL_PumpEvents();
+
+    keyboard = SDL_GetKeyboardState(NULL);
+
+    return keyboard[key];    
 }
-const iPoint& ModuleInput::GetMouseMotion() const
-{
-    return mouse_motion;
-}
+
 
 void ModuleInput::GetModelPath(char* path)
 {
