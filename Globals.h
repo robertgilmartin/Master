@@ -18,4 +18,4 @@ enum update_status
 #define SCREEN_HEIGHT 960
 #define FULLSCREEN false
 #define VSYNC true
-#define TITLE "Nothing to see here"
+#define TITLE "Call me Sr. Engine"

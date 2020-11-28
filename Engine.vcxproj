@@ -109,7 +109,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalIncludeDirectories>./imGUI;./Assimp/include;./DevIL/include;./glew-2.1.0/include;./SDL/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./DebugDraw;./MahtGeoLib;./imGUI;./Assimp/include;./DevIL/include;./glew-2.1.0/include;./SDL/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

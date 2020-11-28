@@ -4,6 +4,7 @@
 #include "../Module.h"
 
 #include "../MahtGeoLib/Math/float4x4.h"
+#include "../MahtGeoLib/Math/float3.h"
 
 class DDRenderInterfaceCoreGL;
 class Camera;
@@ -20,7 +21,7 @@ public:
 	update_status   Update();
 	bool            CleanUp();
 
-    void            Draw(const float4x4& view, const float4x4& proj, unsigned width, unsigned height);
+    void            Draw(const float4x4& view, const float4x4& proj, unsigned width, unsigned height, float3 gridColor);
 private:
 
     static DDRenderInterfaceCoreGL* implementation;

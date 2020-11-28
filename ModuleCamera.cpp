@@ -9,7 +9,7 @@
 #include "MahtGeoLib/Geometry/Frustum.h"
 #include "MahtGeoLib/Math/float3x3.h"
 #include "MahtGeoLib/Math/Quat.h"
-#include "MahtGeoLib/Time/Clock.h"
+
 
 
 ModuleCamera::ModuleCamera()

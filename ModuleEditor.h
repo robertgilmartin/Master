@@ -32,12 +32,19 @@ private:
 
 	ImGuiTextBuffer buf;
 	bool scrollToBottom;
-	bool close_console = true;	
+	bool close_console{ true };
 
-	bool show_app_about  = false;
-	bool go_to_GitHub = false;
-	bool show_app_config = true;
+	bool show_app_about{ false };
+	bool go_to_GitHub{ false };
+	bool show_app_config{ true };
 	
-	
+	float* front{ new float[3] };
+	float* up{ new float[3] };
+	float* right{ new float[3] };
+
+public:
+
+	float* gridColor{ new float[3]{1.000000f, 0.647059f, 0.000000f} };
+	float* bGround{ new float[4]{0.1f, 0.1f, 0.1f, 0.1f } };
 };
 #define va_start __crt_va_start

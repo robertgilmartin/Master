@@ -309,6 +309,7 @@
     #define DEBUG_DRAW_STRING_TYPE_DEFINED 1
 #endif // DEBUG_DRAW_STRING_TYPE_DEFINED
 
+
 namespace dd
 {
 

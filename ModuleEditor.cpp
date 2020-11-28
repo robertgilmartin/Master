@@ -1,11 +1,14 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleEditor.h"
+#include "ModuleCamera.h"
 #include "ModuleRender.h"
 #include "ModuleRenderExercice.h"
+#include "ModuleTexture.h"
 #include "ModuleWindow.h"
 
 #include "glew-2.1.0/include/GL/glew.h"
+#include "DebugDraw/debugdraw.h"
 
 #include "imGUI/imgui_impl_sdl.h"
 #include "imGUI/imgui_impl_opengl3.h"
@@ -147,6 +150,19 @@ update_status ModuleEditor::Update()
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());   
 
     go_to_GitHub = false;
+    
+    front[0]= App->camera->Front.x;
+    front[1] = App->camera->Front.y;
+    front[2] = App->camera->Front.z;
+
+    up[0] = App->camera->Up.x;
+    up[1] = App->camera->Up.y;
+    up[2] = App->camera->Up.z;
+
+    right[0] = App->camera->Right.x;
+    right[1] = App->camera->Right.y;
+    right[2] = App->camera->Right.z;   
+        
 
     return UPDATE_CONTINUE;
 }
@@ -160,8 +176,13 @@ bool ModuleEditor::CleanUp()
 {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplSDL2_Shutdown();
-    ImGui::DestroyContext();
+    ImGui::DestroyContext();   
 
+    delete[] front;
+    delete[] up;
+    delete[] right;
+    delete[] gridColor;
+    delete[]bGround;
     return true;
 }
 
@@ -209,18 +230,69 @@ void ModuleEditor::Configuration()
     static float FPS[100] = {};
     static float millisecond[100] = {};
     static int index = 0;
-    static double refresh_time = 0.0;
+    static double refresh_time = 0.0;    
     
-
     ImGui::Begin("Configuration", &show_app_config);
     ImGui::Text("Options");
 
+    if (ImGui::CollapsingHeader("Camera"))
+    {        
+        static bool activeCamera = true;
+        ImGui::Checkbox("Features", &activeCamera);
+
+        if (activeCamera)
+        {
+            ImGui::InputFloat3("Front", front, "%.3f", ImGuiInputTextFlags_ReadOnly);
+            ImGui::InputFloat3("Up", up, "%.3f", ImGuiInputTextFlags_ReadOnly);
+            ImGui::InputFloat3("Right", right, "%.3f", ImGuiInputTextFlags_ReadOnly);
+            ImGui::InputFloat("Mov speed", &(App->camera->movementSpeed));
+
+            ImGui::InputFloat("Near Plane", &(App->camera->nearPlane));
+            ImGui::InputFloat("Far Plane", &(App->camera->farPlane));
+            ImGui::InputFloat("Field of View", &(App->camera->nearPlane));//FOV
+                        
+            ImGui::Separator();
+            ImGui::Text("Aspect ratio");
+            if (ImGui::Button("21:9"))
+            {
+                App->camera->aspectRatio = 21 / (float)9;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("16:10"))
+            {
+                App->camera->aspectRatio = 16 / (float)10;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("16:9"))
+            {
+                App->camera->aspectRatio = 16 / (float)9;
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("4:3"))
+            {
+                App->camera->aspectRatio = 4 / (float)3;
+            }  
+            ImGui::Separator();
+        }               
+    }
+    if (ImGui::CollapsingHeader("Render"))
+    {            
+        ImGui::SliderFloat3("Grid color", gridColor, 0.0f, 1.0f);  
+        ImGui::SliderFloat4("Background color", bGround, 0.0f, 1.0f);
+    }
+
     if (ImGui::CollapsingHeader("Application"))
     {
-        ImGui::InputText("Engine", engine_name, IM_ARRAYSIZE(engine_name));
-        ImGui::InputText("Organization", organization, IM_ARRAYSIZE(organization));          
+        static bool animate = true;
+        ImGui::Checkbox("Animate", &animate);
 
-        if (refresh_time == 0.0) { refresh_time = ImGui::GetTime(); }
+        ImGui::InputText("Engine", engine_name, IM_ARRAYSIZE(engine_name));
+        ImGui::InputText("Organization", organization, IM_ARRAYSIZE(organization));    
+        
+        if (!animate || refresh_time == 0.0) 
+        {
+            refresh_time = ImGui::GetTime();
+        }        
 
         while (refresh_time < ImGui::GetTime())
         {       
@@ -390,6 +462,22 @@ void ModuleEditor::Configuration()
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), reinterpret_cast<const char*>(vendor));
                 
         ImGui::Separator();         
+    }
+
+    if (ImGui::CollapsingHeader("Texture"))
+    {
+        ImGui::InputInt("Texture Width", &(App->texture->textureWidth), ImGuiInputTextFlags_ReadOnly);
+        ImGui::InputInt("Texture Height", &(App->texture->textureHeight));
+        ImGui::InputInt("Texture Pixel Depth", &(App->texture->pixelDepht));
+        ImGui::InputInt("Texture Format", &(App->texture->textureFormat));
+
+        ImGui::Checkbox("MipMaping", &(App->texture->activeMipmap));
+        if (ImGui::Checkbox("Wrap Filter", &(App->texture->activeWrap)))
+        {
+            ImGui::Checkbox("Wrap Filter", &(App->texture->wrapS));
+            ImGui::Checkbox("Wrap Filter", &(App->texture->wrapR));
+            ImGui::Checkbox("Wrap Filter", &(App->texture->wrapT));
+        }
     }
 
     ImGui::End();

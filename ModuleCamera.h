@@ -31,7 +31,7 @@ public:
 	bool CleanUp();
 	
 
-private:
+public:
 
 	Frustum frustum;	
 	float3 cameraPos = float3(0, 2, -10);
@@ -42,15 +42,14 @@ private:
 
 	float nearPlane{ 0.1f };
 	float farPlane{ 200.0f };
-	float aspectRatio = SCREEN_WIDTH/SCREEN_HEIGHT;
+	float aspectRatio = (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT;
 	//FOV
 
 	float yaw{ -90.0f };
 	float pitch{ 0.0f };
 
 	float movementSpeed;
-	float lastX = 1280, lastY = 960;
-	
+		
 	bool orbit = false;
 	
 };

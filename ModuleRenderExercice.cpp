@@ -10,6 +10,7 @@
 #include "Model.h"
 #include "ModuleEditor.h"
 #include "./DebugDraw/ModuleDebugDraw.h"
+#include "./DebugDraw/debugdraw.h"
 #include "Assimp/cimport.h"
 #include <iostream>
 
@@ -60,14 +61,13 @@ bool ModuleRenderExercice::Init()
 	GLenum err = glewInit();
 	// … check for errors
 	LOG("Using Glew %s", glewGetString(GLEW_VERSION));
-	// Should be 2.0	
-	/*
-	float vtx_data[] = { -1.0f, -1.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 
-						0.0f, 0.0f, 1.0f, 0.0f, 0.5f, 1.0f };*/
+	
+	//Console
 	struct aiLogStream stream;
 	stream.callback = myCallback;
 	aiAttachLogStream(&stream);
 
+	//Scene
 	App->model->Load("BakerHouse.fbx");		
 		
 	return true;
@@ -81,7 +81,12 @@ update_status ModuleRenderExercice::PreUpdate()
 
 	glViewport(0, 0, width, height);
 
-	glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+	background.x = App->editor->bGround[0];
+	background.y = App->editor->bGround[1];
+	background.z = App->editor->bGround[2];
+	background.w = App->editor->bGround[3];
+
+	glClearColor(background[0], background[1], background[2], background[3]);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
@@ -97,11 +102,13 @@ update_status ModuleRenderExercice::Update()
 	int w, h;
 	SDL_GetWindowSize(App->window->window, &w, &h);
 
-	App->debugDraw->Draw(App->camera->viewMatrix(), App->camera->projectionMatrix(), w, h);
+	grid.x = App->editor->gridColor[0];
+	grid.y = App->editor->gridColor[1];
+	grid.z = App->editor->gridColor[2];
 
-	App->model->Draw();
+	App->debugDraw->Draw(App->camera->viewMatrix(), App->camera->projectionMatrix(), w, h, grid);
 
-	
+	App->model->Draw();	
 
 	//FPS
 	CalculateFPS();	
