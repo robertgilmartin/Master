@@ -2,7 +2,6 @@
 #include "Application.h"
 #include "ModuleWindow.h"
 #include "ModuleRender.h"
-#include "ModuleRenderExercice.h"
 #include "ModuleInput.h"
 #include "ModuleCamera.h"
 #include "ModuleEditor.h"
@@ -10,6 +9,7 @@
 #include "ModuleTexture.h"
 #include "Model.h"
 #include "./DebugDraw/ModuleDebugDraw.h";
+#include "MemoryLeaks.h"
 
 using namespace std;
 
@@ -19,8 +19,7 @@ Application::Application()
 	modules.push_back(window = new ModuleWindow());	
 	modules.push_back(texture = new ModuleTexture());
 	modules.push_back(model = new Model());
-	/*modules.push_back(renderer = new ModuleRender());*/		
-	modules.push_back(exercice = new ModuleRenderExercice());
+	modules.push_back(renderer = new ModuleRender());	
 	modules.push_back(debugDraw = new ModuleDebugDraw());
 	modules.push_back(input = new ModuleInput());
 	modules.push_back(editor = new ModuleEditor());
@@ -69,6 +68,8 @@ bool Application::CleanUp()
 
 	for(list<Module*>::reverse_iterator it = modules.rbegin(); it != modules.rend() && ret; ++it)
 		ret = (*it)->CleanUp();
+
+
 
 	return ret;
 }
