@@ -9,6 +9,8 @@ class Application;
 
 class ModuleWindow : public Module
 {
+private:
+	bool ret;
 public:
 
 	ModuleWindow();
@@ -17,6 +19,8 @@ public:
 	virtual ~ModuleWindow();
 
 	// Called before quitting
+	void CreateAWindow();
+
 	bool Init();
 
 	// Called before quitting
@@ -34,6 +38,8 @@ public:
 
 	//The surface contained by the window
 	SDL_Surface* screen_surface = NULL;
+
+	Uint32 flags;
 };
 
 #endif // __ModuleWindow_H__

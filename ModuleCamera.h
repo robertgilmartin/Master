@@ -47,7 +47,7 @@ public:
 	float nearPlane{ 0.1f };
 	float farPlane{ 200.0f };
 	float aspectRatio = (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT;
-	//FOV
+	int HFOV = 2 * atan(tan(1 / 2) * aspectRatio);
 
 	float yaw{ -90.0f };
 	float pitch{ 0.0f };

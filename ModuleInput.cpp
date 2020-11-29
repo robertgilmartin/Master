@@ -1,19 +1,24 @@
 #include "Globals.h"
+
 #include "Application.h"
 #include "ModuleInput.h"
 #include "ModuleRender.h"
 #include "ModuleWindow.h"
 #include "SDL/include/SDL.h"
 #include "ModuleCamera.h"
-#include "ModuleRenderExercice.h"
 #include "Model.h"
+#include "ModuleTexture.h"
 #include "Mesh.h"
+
+#include <string>
 
 #include "imGUI/imgui.h"
 #include "imGUI/imgui_impl_sdl.h"
 #include "imGUI/imgui_impl_opengl3.h"
 
 #include "MemoryLeaks.h"
+
+#include <filesystem>
 
 ModuleInput::ModuleInput()
 {}
@@ -57,8 +62,11 @@ update_status ModuleInput::Update()
         switch (sdlEvent.type)
         {
         case SDL_QUIT:
-            return UPDATE_STOP; 
+            return UPDATE_STOP;
 
+        case SDL_WINDOWEVENT_MAXIMIZED:
+            SDL_MaximizeWindow(App->window->window);
+                    
         case SDL_WINDOWEVENT:
             if (sdlEvent.window.event == SDL_WINDOWEVENT_RESIZED || sdlEvent.window.event == SDL_WINDOWEVENT_SIZE_CHANGED)
                 App->renderer->WindowResized(sdlEvent.window.data1, sdlEvent.window.data2);
@@ -93,17 +101,7 @@ update_status ModuleInput::Update()
         case SDL_DROPFILE:
             
             dropFilePath = sdlEvent.drop.file;
-            GetModelPath(dropFilePath);
-
-            //No pilla bé el path
-            SDL_ShowSimpleMessageBox(
-                SDL_MESSAGEBOX_INFORMATION,
-                "File dropped on window",
-                dropFilePath, App->window->window);
-
-            //Delete previous 
-            
-            SDL_free(dropFilePath);    
+            GetModelPath(dropFilePath);            
             break;
         }
 
@@ -141,7 +139,13 @@ bool ModuleInput::CheckKey(SDL_Scancode key)
 }
 
 void ModuleInput::GetModelPath(const char* path)
-{
-    App->model->Load(path);
+{    
+    
+    std::size_t dot = static_cast<std::string> (path).find(".");      
+
+    std::string extension = static_cast<std::string> (path).substr(dot);
+
+    if (extension == ".fbx"){ App->model->Load(path); }
+    /*else if(extension == ".png"|| extension == ".dds") {App->texture->LoadTexture(path);}*/
 }
 

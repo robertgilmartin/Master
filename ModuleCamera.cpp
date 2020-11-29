@@ -3,7 +3,6 @@
 #include "ModuleInput.h"
 #include "ModuleRender.h"
 #include "ModuleCamera.h"
-#include "ModuleRenderExercice.h"
 #include "SDL.h"
 #include "glew-2.1.0/include/GL/glew.h"
 #include "MahtGeoLib/Geometry/Frustum.h"

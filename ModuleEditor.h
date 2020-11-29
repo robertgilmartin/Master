@@ -20,11 +20,9 @@ public:
 	void ShowAboutWindow();
 	void GoToGitHub();
 	void Configuration();
-
+	void Information();
 	void Log(const char* fmt);
-
 	void ShowDockingDisabledMessage();
-
 
 private:
 	
@@ -37,6 +35,7 @@ private:
 	bool show_app_about{ false };
 	bool go_to_GitHub{ false };
 	bool show_app_config{ true };
+	bool show_app_info{ true };
 	
 	float* front{ new float[3] };
 	float* up{ new float[3] };

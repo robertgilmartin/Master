@@ -3,7 +3,6 @@
 #include "ModuleEditor.h"
 #include "ModuleCamera.h"
 #include "ModuleRender.h"
-#include "ModuleRenderExercice.h"
 #include "ModuleTexture.h"
 #include "ModuleWindow.h"
 #include "Model.h"
@@ -30,8 +29,6 @@ ModuleEditor::~ModuleEditor()
 
 bool ModuleEditor::Init()
 {
-    
-
     ImGui::CreateContext();
     ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer->glContext);
     ImGui_ImplOpenGL3_Init();
@@ -109,12 +106,7 @@ update_status ModuleEditor::Update()
 
         //File
         if (ImGui::BeginMenu("File"))
-        {            
-            //Close Engine
-            if (ImGui::MenuItem("Quit"))
-            {
-                return UPDATE_STOP;
-            }
+        {                                    
             if (ImGui::MenuItem("Open Among Us FBX"))
             {
                 App->model->Load("AmongUs.fbx");
@@ -126,6 +118,10 @@ update_status ModuleEditor::Update()
             if (ImGui::MenuItem("Open Baker House FBX"))
             {
                 App->model->Load("BakerHouse.fbx");
+            }
+            if (ImGui::MenuItem("Quit"))
+            {
+                return UPDATE_STOP;
             }
             ImGui::EndMenu();
         }
@@ -143,6 +139,9 @@ update_status ModuleEditor::Update()
         {
             //Console
             ImGui::MenuItem("Console", NULL, &close_console);
+            
+            //Information
+            ImGui::MenuItem("Information", NULL, &show_app_info);
             ImGui::EndMenu();
         }
         //Help
@@ -158,8 +157,8 @@ update_status ModuleEditor::Update()
     if (show_app_about) { ShowAboutWindow(); }
     if (go_to_GitHub) { GoToGitHub(); }
     if (show_app_config) { Configuration(); }
-
-    ImGui::ShowDemoWindow();
+    if (show_app_info) { Information(); }
+        
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());   
 
@@ -227,93 +226,15 @@ void ModuleEditor::GoToGitHub()
     ShellExecute(0, 0, "https://github.com/robertgilmartin/Master", 0, 0, SW_SHOW);    
 }
 
-void ModuleEditor::Configuration()
+void ModuleEditor::Information()
 {
-
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-    //Configuration window
-    static bool fullscreen = false;
-    static bool fullscreen_desktop = false;
-    static bool resizable = false;
-    static bool borderless = false;
-    static float brightness = 1.0f;
-    static int width = 1280;
-    static int height = 960;
-
-    //Application window
+    ImGui::Begin("Information", &show_app_info);
     static char engine_name[12] = TITLE;
-    static char organization[18] = "UPC BarcelonaTECH";  
+    static char organization[18] = "UPC BarcelonaTECH";
     static float FPS[100] = {};
     static float millisecond[100] = {};
     static int index = 0;
-    static double refresh_time = 0.0;    
-    
-    ImGui::Begin("Configuration", &show_app_config);
-    ImGui::Text("Options");
-
-    if (ImGui::CollapsingHeader("Camera"))
-    {        
-        static bool activeCamera = true;
-        ImGui::Checkbox("Features", &activeCamera);
-
-        if (activeCamera)
-        {
-            ImGui::InputFloat3("Front", front, "%.3f", ImGuiInputTextFlags_ReadOnly);
-            ImGui::InputFloat3("Up", up, "%.3f", ImGuiInputTextFlags_ReadOnly);
-            ImGui::InputFloat3("Right", right, "%.3f", ImGuiInputTextFlags_ReadOnly);
-            ImGui::InputFloat("Mov speed", &(App->camera->movementSpeed));
-            ImGui::InputFloat("RotY speed", &(App->camera->rotationSpeedY));
-            ImGui::InputFloat("RotX speed", &(App->camera->rotationSpeedX));
-
-            ImGui::InputFloat("Near Plane", &(App->camera->nearPlane));
-            ImGui::InputFloat("Far Plane", &(App->camera->farPlane));
-            ImGui::InputFloat("Field of View", &(App->camera->nearPlane));//FOV
-                        
-            ImGui::Separator();
-            ImGui::Text("Aspect ratio");
-            if (ImGui::Button("21:9"))
-            {
-                App->camera->aspectRatio = 21 / (float)9;
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("16:10"))
-            {
-                App->camera->aspectRatio = 16 / (float)10;
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("16:9"))
-            {
-                App->camera->aspectRatio = 16 / (float)9;
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("4:3"))
-            {
-                App->camera->aspectRatio = 4 / (float)3;
-            }  
-            ImGui::Separator();
-        }               
-    }
-    if (ImGui::CollapsingHeader("Render"))
-    {            
-        ImGui::SliderFloat3("Grid color", gridColor, 0.0f, 1.0f);  
-        ImGui::SliderFloat4("Background color", bGround, 0.0f, 1.0f);
-    }
-
-    if (ImGui::CollapsingHeader("Properties"))
-    {
-        ImGui::Text("Transform");
-        ImGui::InputFloat3("Position", position, "%.3f", ImGuiInputTextFlags_ReadOnly);
-        ImGui::InputFloat3("Rotation", rotation, "%.3f", ImGuiInputTextFlags_ReadOnly);
-        ImGui::InputFloat3("Scale", scale, "%.3f", ImGuiInputTextFlags_ReadOnly);
-
-        ImGui::Separator();
-
-        ImGui::Text("Geometry");
-        ImGui::InputInt("Meshes", &(App->model->totalMeshes));        
-        ImGui::InputInt("Faces", &(App->model->mesh.faces));
-        ImGui::InputInt("Indices", &(App->model->mesh.num_indices));
-        ImGui::InputInt("Vertices", &(App->model->mesh.num_vertices));          
-    }
+    static double refresh_time = 0.0;
 
     if (ImGui::CollapsingHeader("Application"))
     {
@@ -321,15 +242,15 @@ void ModuleEditor::Configuration()
         ImGui::Checkbox("Animate", &animate);
 
         ImGui::InputText("Engine", engine_name, IM_ARRAYSIZE(engine_name));
-        ImGui::InputText("Organization", organization, IM_ARRAYSIZE(organization));    
-        
-        if (!animate || refresh_time == 0.0) 
+        ImGui::InputText("Organization", organization, IM_ARRAYSIZE(organization));
+
+        if (!animate || refresh_time == 0.0)
         {
             refresh_time = ImGui::GetTime();
-        }        
+        }
 
         while (refresh_time < ImGui::GetTime())
-        {       
+        {
             FPS[index] = App->renderer->FPS;
 
             millisecond[index] = App->renderer->frameTime;
@@ -342,7 +263,7 @@ void ModuleEditor::Configuration()
             else
             {
                 index = 0;
-            }            
+            }
         }
 
         float FPSaverage = 0.0f;
@@ -365,41 +286,8 @@ void ModuleEditor::Configuration()
         ImGui::PlotHistogram("##milliseconds", millisecond, IM_ARRAYSIZE(millisecond), 0, title, 0.0f, 40.0f, ImVec2(310, 100.0f));
     }
 
-    if (ImGui::CollapsingHeader("Window"))
-    {        
-        if (ImGui::Checkbox("Fullscreen", &fullscreen))
-        {
-            App->window->WindowConfiguration(SDL_WINDOW_FULLSCREEN, true);
-        }
-        ImGui::SameLine();
-        if (ImGui::Checkbox("Fullscreen Desktop", &fullscreen_desktop))
-        {
-            App->window->WindowConfiguration(SDL_WINDOW_FULLSCREEN_DESKTOP, NULL);
-        }
-        if (ImGui::Checkbox("Borderless", &borderless))
-        {
-            App->window->WindowConfiguration(SDL_WINDOW_BORDERLESS, true);
-        }
-        ImGui::SameLine();
-        if (ImGui::Checkbox("Resizable", &resizable))
-        {
-            App->window->WindowConfiguration(SDL_WINDOW_RESIZABLE, true);
-        }    
-        if (ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f, "%.3f"));
-        {
-            App->window->Brightness(brightness);
-        }
-        if (ImGui::SliderInt("Width", &width, 0, 1920, "%.3f"));
-        {
-            App->window->WidhtHeightResizable(width, height);
-        }
-        if (ImGui::SliderInt("Height", &height, 0, 1080, " %.3f"));
-        {
-            App->window->WidhtHeightResizable(width, height);
-        }
-    }   
     if (ImGui::CollapsingHeader("Hardware"))
-    {      
+    {
         SDL_version linked;
 
         SDL_GetVersion(&linked);
@@ -426,7 +314,7 @@ void ModuleEditor::Configuration()
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), patch);
 
         const GLubyte* versionGL = glGetString(GL_VERSION);
-        
+
         ImGui::Text("OpenGL Version: ");
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), reinterpret_cast<const char*>(versionGL));
@@ -435,11 +323,11 @@ void ModuleEditor::Configuration()
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), " 1.8.0");
 
-        ImGui::Separator();               
+        ImGui::Separator();
 
         std::string s = std::to_string(SDL_GetCPUCount());
-        char const* CPUCores = s.c_str();  
-        
+        char const* CPUCores = s.c_str();
+
         std::string t = std::to_string(SDL_GetCPUCacheLineSize());
         char const* CPUCache = t.c_str();
 
@@ -447,13 +335,13 @@ void ModuleEditor::Configuration()
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), CPUCores);
         ImGui::SameLine();
-        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "(Cache:");        
+        ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "(Cache:");
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), CPUCache);
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "kB)");
-         
-        std::string r = std::to_string(SDL_GetSystemRAM()/1000);
+
+        std::string r = std::to_string(SDL_GetSystemRAM() / 1000);
         char const* RAM = r.c_str();
 
         ImGui::Text("System RAM:");
@@ -461,9 +349,9 @@ void ModuleEditor::Configuration()
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), RAM);
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "GB");
-                
+
         std::string cps;
-                
+
         if (SDL_HasAVX()) { cps.append("AVX, "); }
         if (SDL_HasAVX2()) { cps.append("AVX2, "); }
         if (SDL_HasAltiVec()) { cps.append("AltiVec, "); }
@@ -483,9 +371,9 @@ void ModuleEditor::Configuration()
 
         ImGui::Separator();
 
-        const GLubyte* vendor = glGetString(GL_VENDOR); 
-        const GLubyte* renderer = glGetString(GL_RENDERER); 
-                
+        const GLubyte* vendor = glGetString(GL_VENDOR);
+        const GLubyte* renderer = glGetString(GL_RENDERER);
+
         ImGui::Text("GPU:");
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), reinterpret_cast<const char*>(renderer));
@@ -493,24 +381,127 @@ void ModuleEditor::Configuration()
         ImGui::Text("Brand:");
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), reinterpret_cast<const char*>(vendor));
-                
-        ImGui::Separator();         
+
+        ImGui::Separator();
     }
+
+    if (ImGui::CollapsingHeader("Properties"))
+    {
+        ImGui::Text("Transform");
+        ImGui::InputFloat3("Position", position, "%.3f", ImGuiInputTextFlags_ReadOnly);
+        ImGui::InputFloat3("Rotation", rotation, "%.3f", ImGuiInputTextFlags_ReadOnly);
+        ImGui::InputFloat3("Scale", scale, "%.3f", ImGuiInputTextFlags_ReadOnly);
+
+        ImGui::Separator();
+
+        ImGui::Text("Geometry");
+        ImGui::InputInt("Meshes", &(App->model->totalMeshes));
+        ImGui::InputInt("Faces", &(App->model->mesh.faces));
+        ImGui::InputInt("Indices", &(App->model->mesh.num_indices));
+        ImGui::InputInt("Vertices", &(App->model->mesh.num_vertices));
+    }
+    ImGui::End();
+}
+
+void ModuleEditor::Configuration()
+{
+
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+    //Configuration window
+    static bool fullscreen = false;
+    static bool fullscreen_desktop = false;
+    static bool restore_size = false;
+    static bool resizable = false;
+    static bool borderless = false;
+    static float brightness = 1.0f;
+    static int width = 1280;
+    static int height = 960;
+    
+    ImGui::Begin("Configuration", &show_app_config);
+    ImGui::Text("Options");
+
+    if (ImGui::CollapsingHeader("Camera"))
+    {        
+        static bool activeCamera = true;
+        ImGui::Checkbox("Features", &activeCamera);
+
+        if (activeCamera)
+        {
+            ImGui::InputFloat3("Front", front, "%.3f", ImGuiInputTextFlags_ReadOnly);
+            ImGui::InputFloat3("Up", up, "%.3f", ImGuiInputTextFlags_ReadOnly);
+            ImGui::InputFloat3("Right", right, "%.3f", ImGuiInputTextFlags_ReadOnly);
+            ImGui::InputFloat("Mov speed", &(App->camera->movementSpeed));
+            ImGui::InputFloat("RotY speed", &(App->camera->rotationSpeedY));
+            ImGui::InputFloat("RotX speed", &(App->camera->rotationSpeedX));
+
+            ImGui::InputFloat("Near Plane", &(App->camera->nearPlane));
+            ImGui::InputFloat("Far Plane", &(App->camera->farPlane));           
+                        
+            
+        }               
+    }
+    if (ImGui::CollapsingHeader("Render"))
+    {            
+        ImGui::SliderFloat3("Grid color", gridColor, 0.0f, 1.0f);  
+        ImGui::SliderFloat4("Background color", bGround, 0.0f, 1.0f);
+    }       
+
+    if (ImGui::CollapsingHeader("Window"))
+    {        
+        if (ImGui::Checkbox("Fullscreen", &fullscreen))
+        {
+            SDL_SetWindowFullscreen(App->window->window, SDL_WINDOW_FULLSCREEN);
+        }        
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Fullscreen Desktop", &fullscreen_desktop))
+        {            
+            SDL_SetWindowFullscreen(App->window->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+        }        
+        if (ImGui::Checkbox("Borderless", &borderless))
+        {
+            App->window->WindowConfiguration(SDL_WINDOW_BORDERLESS, true);
+        }
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Resizable", &resizable))
+        {
+            App->window->WindowConfiguration(SDL_WINDOW_RESIZABLE, true);
+        }    
+        if (ImGui::SliderFloat("Brightness", &brightness, 0.0f, 1.0f, "%.3f"));
+        {
+            App->window->Brightness(brightness);
+        }  
+        ImGui::Separator();
+        ImGui::Text("Aspect ratio");
+        if (ImGui::Button("21:9"))
+        {
+            App->camera->aspectRatio = 21 / (float)9;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("16:10"))
+        {
+            App->camera->aspectRatio = 16 / (float)10;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("16:9"))
+        {
+            App->camera->aspectRatio = 16 / (float)9;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("4:3"))
+        {
+            App->camera->aspectRatio = 4 / (float)3;
+        }
+        ImGui::Separator();
+    }       
 
     if (ImGui::CollapsingHeader("Texture"))
     {
         ImGui::InputInt("Texture Width", &(App->texture->textureWidth), ImGuiInputTextFlags_ReadOnly);
-        ImGui::InputInt("Texture Height", &(App->texture->textureHeight));
-        ImGui::InputInt("Texture Pixel Depth", &(App->texture->pixelDepht));
-        ImGui::InputInt("Texture Format", &(App->texture->textureFormat));
-
-        ImGui::Checkbox("MipMaping", &(App->texture->activeMipmap));
-        if (ImGui::Checkbox("Wrap Filter", &(App->texture->activeWrap)))
-        {
-            ImGui::Checkbox("Wrap Filter", &(App->texture->wrapS));
-            ImGui::Checkbox("Wrap Filter", &(App->texture->wrapR));
-            ImGui::Checkbox("Wrap Filter", &(App->texture->wrapT));
-        }
+        ImGui::InputInt("Texture Height", &(App->texture->textureHeight), ImGuiInputTextFlags_ReadOnly);
+        ImGui::InputInt("Texture Pixel Depth", &(App->texture->pixelDepht), ImGuiInputTextFlags_ReadOnly);
+        ImGui::InputInt("Texture Format", &(App->texture->textureFormat), ImGuiInputTextFlags_ReadOnly);
+        
     }
 
     ImGui::End();
