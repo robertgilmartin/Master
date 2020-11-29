@@ -360,3 +360,17 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+Assimp/*
+Debug/*
+DevIL/*
+DebugDraw/*
+glew-2.1.0/*
+imGUI/*
+MahtGeoLib/*
+SDL/*
+Shaders/*
+
+
+
+
