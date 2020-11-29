@@ -500,8 +500,7 @@ void ModuleEditor::Configuration()
         ImGui::InputInt("Texture Width", &(App->texture->textureWidth), ImGuiInputTextFlags_ReadOnly);
         ImGui::InputInt("Texture Height", &(App->texture->textureHeight), ImGuiInputTextFlags_ReadOnly);
         ImGui::InputInt("Texture Pixel Depth", &(App->texture->pixelDepht), ImGuiInputTextFlags_ReadOnly);
-        ImGui::InputInt("Texture Format", &(App->texture->textureFormat), ImGuiInputTextFlags_ReadOnly);
-        
+        ImGui::InputInt("Texture Format", &(App->texture->textureFormat), ImGuiInputTextFlags_ReadOnly);        
     }
 
     ImGui::End();
