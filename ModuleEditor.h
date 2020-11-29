@@ -42,6 +42,10 @@ private:
 	float* up{ new float[3] };
 	float* right{ new float[3] };
 
+	float position[3]{ 0.0f, 0.0f, 0.0f };
+	float rotation[3]{ 0.0f, 0.0f, 0.0f };
+	float scale[3]{ 0.0f, 0.0f, 0.0f };
+
 public:
 
 	float* gridColor{ new float[3]{1.000000f, 0.647059f, 0.000000f} };

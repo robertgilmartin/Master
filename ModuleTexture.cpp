@@ -4,7 +4,7 @@
 #include "DevIL/include/IL/il.h"
 #include "DevIL/include/IL/ilu.h"
 #include "glew-2.1.0/include/GL/glew.h"
-
+#include "MemoryLeaks.h"
 
 ModuleTexture::ModuleTexture()
 {
@@ -43,7 +43,7 @@ bool ModuleTexture::CleanUp()
 
 unsigned ModuleTexture::LoadTexture(const char* filename) 
 {
-	ILuint imageText;    
+    ILuint imageText;    
 
     ilGenImages(1, &imageText);
     ilBindImage(imageText);
@@ -51,7 +51,7 @@ unsigned ModuleTexture::LoadTexture(const char* filename)
     ILboolean success;
     
     unsigned textureID;
-
+    textureName = filename;
     success = ilLoadImage(filename);
     if (success == IL_TRUE)
     {

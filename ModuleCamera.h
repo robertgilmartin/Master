@@ -19,12 +19,16 @@ public:
 	float4x4 projectionMatrix();
 	float4x4 viewMatrix();
 
+	void WASD();
+	void Focus();
+
 	void CameraRotation(float3& axis, float angle);
 
 	void MouseMotionInput(float xoffset, float offset);
 	void WheelTransformation(int wheel);
 
 	void MovementSpeed();
+	void RotationSpeed(float xoffset, float yoffset);
 	void Orbit();
 
 
@@ -47,8 +51,11 @@ public:
 
 	float yaw{ -90.0f };
 	float pitch{ 0.0f };
+	float oldpitch{ 0.0f };
 
 	float movementSpeed;
+	float rotationSpeedY;
+	float rotationSpeedX;
 		
 	bool orbit = false;
 	

@@ -3,7 +3,7 @@
 #include "Application.h"
 #include "ModuleProgram.h"
 #include "SDL.h"
-
+#include "MemoryLeaks.h"
 
 ModuleProgram::ModuleProgram()
 {
@@ -80,13 +80,7 @@ unsigned ModuleProgram::CreateProgram(unsigned vtx_shader, unsigned frg_shader)
 }
 
 bool ModuleProgram::Init()
-{	
-	/*SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
-	glEnable(GL_DEBUG_OUTPUT);
-	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-	glDebugMessageCallback(, nullptr);
-	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, true);*/
-		
+{			
 	vertexCompiled = CompileShader(GL_VERTEX_SHADER, LoadShaderSource("..\\Shaders\\vertexShader.glsl"));
 	fragmentCompiled = CompileShader(GL_FRAGMENT_SHADER, LoadShaderSource("..\\Shaders\\fragmentShader.glsl"));
 

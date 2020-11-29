@@ -22,6 +22,8 @@ public:
 	int pixelDepht;
 	int textureFormat;
 
+	const char* textureName;
+
 	bool activeMipmap = false;
 	bool activeWrap = false;
 	bool wrapS = false;

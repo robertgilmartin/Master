@@ -6,6 +6,7 @@
 #include "ModuleRenderExercice.h"
 #include "ModuleTexture.h"
 #include "ModuleWindow.h"
+#include "Model.h"
 
 #include "glew-2.1.0/include/GL/glew.h"
 #include "DebugDraw/debugdraw.h"
@@ -18,6 +19,7 @@
 #include <string>
 #include <vector>
 
+#include "MemoryLeaks.h"
 
 ModuleEditor::ModuleEditor()
 {}
@@ -31,7 +33,7 @@ bool ModuleEditor::Init()
     
 
     ImGui::CreateContext();
-    ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->exercice->glContext);
+    ImGui_ImplSDL2_InitForOpenGL(App->window->window, App->renderer->glContext);
     ImGui_ImplOpenGL3_Init();
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
@@ -113,6 +115,18 @@ update_status ModuleEditor::Update()
             {
                 return UPDATE_STOP;
             }
+            if (ImGui::MenuItem("Open Among Us FBX"))
+            {
+                App->model->Load("AmongUs.fbx");
+            }
+            if (ImGui::MenuItem("Open Croissant FBX"))
+            {
+                App->model->Load("BurntCroissant.fbx");
+            }
+            if (ImGui::MenuItem("Open Baker House FBX"))
+            {
+                App->model->Load("BakerHouse.fbx");
+            }
             ImGui::EndMenu();
         }
         
@@ -192,10 +206,12 @@ void ModuleEditor::ShowAboutWindow()
 
     ImGui::Begin("About", &close);
     
-    ImGui::Text("Engine: Nothing to see here.\n");
+    ImGui::Text("Engine: Sir Engine.\n");
     ImGui::Text("This is a non-informatic-engineer-Engine, I tryed it.\n");
     ImGui::Text("This Engine is made by Robert Gil Martin.\n");
+    ImGui::Separator();
     ImGui::Text("Libraries:\nSDL.lib\nglew2.1.0.lib\nassimp-vc141-mt.lib\nDevIL.lib\nILU.lib\nILUT.lib\n");
+    ImGui::Separator();
     ImGui::Text("License: MIT License");
 
     if (close == false)
@@ -225,8 +241,8 @@ void ModuleEditor::Configuration()
     static int height = 960;
 
     //Application window
-    static char engine_name[20] = TITLE;
-    static char organization[20] = "UPC BarcelonaTECH";  
+    static char engine_name[12] = TITLE;
+    static char organization[18] = "UPC BarcelonaTECH";  
     static float FPS[100] = {};
     static float millisecond[100] = {};
     static int index = 0;
@@ -246,6 +262,8 @@ void ModuleEditor::Configuration()
             ImGui::InputFloat3("Up", up, "%.3f", ImGuiInputTextFlags_ReadOnly);
             ImGui::InputFloat3("Right", right, "%.3f", ImGuiInputTextFlags_ReadOnly);
             ImGui::InputFloat("Mov speed", &(App->camera->movementSpeed));
+            ImGui::InputFloat("RotY speed", &(App->camera->rotationSpeedY));
+            ImGui::InputFloat("RotX speed", &(App->camera->rotationSpeedX));
 
             ImGui::InputFloat("Near Plane", &(App->camera->nearPlane));
             ImGui::InputFloat("Far Plane", &(App->camera->farPlane));
@@ -281,6 +299,22 @@ void ModuleEditor::Configuration()
         ImGui::SliderFloat4("Background color", bGround, 0.0f, 1.0f);
     }
 
+    if (ImGui::CollapsingHeader("Properties"))
+    {
+        ImGui::Text("Transform");
+        ImGui::InputFloat3("Position", position, "%.3f", ImGuiInputTextFlags_ReadOnly);
+        ImGui::InputFloat3("Rotation", rotation, "%.3f", ImGuiInputTextFlags_ReadOnly);
+        ImGui::InputFloat3("Scale", scale, "%.3f", ImGuiInputTextFlags_ReadOnly);
+
+        ImGui::Separator();
+
+        ImGui::Text("Geometry");
+        ImGui::InputInt("Meshes", &(App->model->totalMeshes));        
+        ImGui::InputInt("Faces", &(App->model->mesh.faces));
+        ImGui::InputInt("Indices", &(App->model->mesh.num_indices));
+        ImGui::InputInt("Vertices", &(App->model->mesh.num_vertices));          
+    }
+
     if (ImGui::CollapsingHeader("Application"))
     {
         static bool animate = true;
@@ -296,9 +330,9 @@ void ModuleEditor::Configuration()
 
         while (refresh_time < ImGui::GetTime())
         {       
-            FPS[index] = App->exercice->FPS;
+            FPS[index] = App->renderer->FPS;
 
-            millisecond[index] = App->exercice->frameTime;
+            millisecond[index] = App->renderer->frameTime;
 
             refresh_time += 1.0f / 60.0f;
             if (index < IM_ARRAYSIZE(FPS))
@@ -381,7 +415,6 @@ void ModuleEditor::Configuration()
 
         ImGui::Text("SDL Version: ");
         ImGui::SameLine();
-        /*ImGui::TextColored2(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), major, minor, patch);*/
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), major);
         ImGui::SameLine();
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), ".");

@@ -7,12 +7,13 @@
 #include "ModuleCamera.h"
 #include "ModuleRenderExercice.h"
 #include "Model.h"
-
+#include "Mesh.h"
 
 #include "imGUI/imgui.h"
 #include "imGUI/imgui_impl_sdl.h"
 #include "imGUI/imgui_impl_opengl3.h"
 
+#include "MemoryLeaks.h"
 
 ModuleInput::ModuleInput()
 {}
@@ -90,7 +91,7 @@ update_status ModuleInput::Update()
             break;            
 
         case SDL_DROPFILE:
-            /*App->model->DeleteScene();*/
+            
             dropFilePath = sdlEvent.drop.file;
             GetModelPath(dropFilePath);
 
@@ -117,6 +118,7 @@ update_status ModuleInput::Update()
     if (Lpressed)
     {
         App->camera->MouseMotionInput(mouse_motion.x, -mouse_motion.y);
+        App->camera->RotationSpeed(mouse_motion.x, -mouse_motion.y);
     }
 
     return UPDATE_CONTINUE;
@@ -138,16 +140,8 @@ bool ModuleInput::CheckKey(SDL_Scancode key)
     return keyboard[key];    
 }
 
-
-void ModuleInput::GetModelPath(char* path)
+void ModuleInput::GetModelPath(const char* path)
 {
     App->model->Load(path);
 }
 
-void ModuleInput::DeletePreviousScene()
-{
-    if (true)
-    {
-
-    }
-}

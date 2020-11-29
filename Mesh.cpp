@@ -6,7 +6,7 @@
 #include "ModuleProgram.h"
 #include "ModuleCamera.h"
 #include "Application.h"
-
+#include "MemoryLeaks.h"
 Mesh::Mesh()
 {
 	vbo = ebo = vao = 0;
@@ -40,7 +40,7 @@ void Mesh::LoadVBO(const aiMesh* mesh)
 
 	glUnmapBuffer(GL_ARRAY_BUFFER);
 	num_vertices = mesh->mNumVertices;
-	material_index = mesh->mMaterialIndex;
+	material_index = mesh->mMaterialIndex;	
 }
 
 void Mesh::LoadEBO(const aiMesh* mesh)
@@ -50,8 +50,8 @@ void Mesh::LoadEBO(const aiMesh* mesh)
 	unsigned index_size = sizeof(unsigned) * mesh->mNumFaces * 3;
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_size, nullptr, GL_STATIC_DRAW);
 	unsigned* indices = (unsigned*)(glMapBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_WRITE_ONLY));
-
-	for (unsigned i = 0; i < mesh->mNumFaces; ++i)
+	faces = mesh->mNumFaces;
+	for (unsigned i = 0; i < faces; ++i)
 	{
 		assert(mesh->mFaces[i].mNumIndices == 3); // note: assume triangles = 3 indices per face
 		*(indices++) = mesh->mFaces[i].mIndices[0];
@@ -79,7 +79,7 @@ void Mesh::CreateVAO()
 	glBindVertexArray(0);
 }
 
-void Mesh::Draw(const std::vector<unsigned>& model_textures)
+void Mesh::Draw(std::vector<unsigned>& model_textures)
 {
 	unsigned program = App->program->program;
 
@@ -99,4 +99,5 @@ void Mesh::Draw(const std::vector<unsigned>& model_textures)
 
 	glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_INT, nullptr);
 	glBindVertexArray(0);
+	
 }

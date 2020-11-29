@@ -9,7 +9,7 @@
 #include "MahtGeoLib/Geometry/Frustum.h"
 #include "MahtGeoLib/Math/float3x3.h"
 #include "MahtGeoLib/Math/Quat.h"
-
+#include "MemoryLeaks.h"
 
 
 ModuleCamera::ModuleCamera()
@@ -72,43 +72,17 @@ bool ModuleCamera::Init()
 
 update_status ModuleCamera::Update()
 {
-	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(*(viewMatrix().v));
-			
-	MovementSpeed();	
-
-	if (App->input->Rpressed)
-	{
-		if (App->input->CheckKey(SDL_SCANCODE_W))
-		{
-			cameraPos += Front * movementSpeed;
-		}
-		if (App->input->CheckKey(SDL_SCANCODE_S))
-		{
-			cameraPos -= Front * movementSpeed;
-		}
-
-		if (App->input->CheckKey(SDL_SCANCODE_A))
-		{
-			cameraPos -= Right * movementSpeed;
-		}
-
-		if (App->input->CheckKey(SDL_SCANCODE_D))
-		{
-			cameraPos += Right * movementSpeed;
-		}
-	}	
-
-	if (App->input->CheckKey(SDL_SCANCODE_F))
-	{
-		cameraPos = float3(0, 2, -10);
-	}
+	MovementSpeed();
+	WASD();
+	Focus();
 
 	if (App->input->CheckKey(SDL_SCANCODE_LALT) && App->input->Lpressed)
 	{
 		SetInitUpFrontRight();
-		cameraPos = float3(0, 2, -10);		
+		cameraPos = float3(0, 2, -10);	
+		/*CameraRotation(Up, 10);*/
 		orbit = true;
 	} 
 
@@ -128,7 +102,7 @@ void ModuleCamera::MouseMotionInput(float xoffset, float yoffset)
 	xoffset *= movementSpeed;
 	yoffset *= movementSpeed;
 
-	float oldpitch = pitch;
+	oldpitch = pitch;
 
 	yaw += xoffset; 
 	pitch += yoffset;
@@ -139,7 +113,7 @@ void ModuleCamera::MouseMotionInput(float xoffset, float yoffset)
 		pitch = -89.0f;
 
 	CameraRotation(Right, pitch - oldpitch);
-	CameraRotation(WorldUp, -xoffset);
+	CameraRotation(WorldUp, -xoffset);	
 
 	SetFrustum();
 }
@@ -161,13 +135,53 @@ bool ModuleCamera::CleanUp()
 	return true;
 }
 
+void ModuleCamera::WASD()
+{
+	if (App->input->Rpressed)
+	{		
+		if (App->input->CheckKey(SDL_SCANCODE_W))
+		{
+			cameraPos += Front * movementSpeed;
+		}
+		if (App->input->CheckKey(SDL_SCANCODE_S))
+		{
+			cameraPos -= Front * movementSpeed;
+		}
+
+		if (App->input->CheckKey(SDL_SCANCODE_A))
+		{
+			cameraPos -= Right * movementSpeed;
+		}
+
+		if (App->input->CheckKey(SDL_SCANCODE_D))
+		{
+			cameraPos += Right * movementSpeed;
+		}
+	}
+}
+
 void ModuleCamera::MovementSpeed()
 {
-	movementSpeed = 4 * (1/ App->exercice->FPS);
+	movementSpeed = 4 * (1/ App->renderer->FPS);
 
 	if (App->input->CheckKey(SDL_SCANCODE_LSHIFT))
 	{
 		movementSpeed *= 2;
+	}
+}
+
+void ModuleCamera::RotationSpeed(float xoffset, float yoffset)
+{
+	rotationSpeedY = (pitch - oldpitch) * (int)(App->renderer->FPS);
+	rotationSpeedX = (-xoffset) * (int)(App->renderer->FPS);
+}
+
+
+void ModuleCamera::Focus()
+{
+	if (App->input->CheckKey(SDL_SCANCODE_F))
+	{
+		cameraPos = float3(0, 2, -10);
 	}
 }
 

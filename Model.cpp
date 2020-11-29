@@ -4,16 +4,23 @@
 #include "assimp/postprocess.h"
 #include "ModuleTexture.h"
 #include "Application.h"
+#include "GL/glew.h"
 
+#include "MemoryLeaks.h"
 
 Model::Model()
-{
+{	
 }
 
+update_status Model::Update()
+{
+	
+	return UPDATE_CONTINUE;
+}
 
 void Model::Load(const char* filename)
-{
-	/*scene = aiImportFile(filename, aiProcessPreset_TargetRealtime_MaxQuality);*/
+{	
+	CleanUp();
 	const aiScene* scene = import.ReadFile(filename, aiProcessPreset_TargetRealtime_MaxQuality);
 	
 	if (scene)
@@ -26,11 +33,13 @@ void Model::Load(const char* filename)
 		LOG("Error loading %s: %s", filename, aiGetErrorString());
 	}	
 }
+
 void Model::LoadTexture(const aiScene* scene)
 {
 	aiString file;	
-
-	for (unsigned i = 0; i < scene->mNumMaterials; ++i)
+	
+	totalMaterials = scene->mNumMaterials;
+	for (unsigned i = 0; i < totalMaterials; ++i)
 	{
 		if (scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &file) == AI_SUCCESS)
 		{
@@ -41,28 +50,39 @@ void Model::LoadTexture(const aiScene* scene)
 
 void Model::LoadMeshes(const aiScene* scene) 
 {
-	aiString file;
-	
+	aiString file;	
+
 	for (unsigned i = 0; i < scene->mNumMeshes; ++i)
 	{
 		aiMesh* currentMesh = scene->mMeshes[i];
-		Mesh mesh;
+		
 		mesh.LoadVBO(currentMesh);
 		mesh.LoadEBO(currentMesh);
 		mesh.CreateVAO();
-		meshes.push_back(mesh);
+		meshes.push_back(mesh);		
 	}
 }
 
 void Model::Draw() 
 {
-	for (unsigned i = 0; i < meshes.size(); ++i) 
+	totalMeshes = meshes.size();
+	for (unsigned i = 0; i < totalMeshes; ++i) 
 	{
 		meshes[i].Draw(materials);
 	}
 }
 
-void Model::DeleteScene()
+
+bool Model::CleanUp()
 {
+	materials.clear();
+	meshes.clear();
+
+	glDeleteBuffers(1, &(mesh.vbo));
+	glDeleteBuffers(1, &(mesh.ebo));
+	glDeleteBuffers(1, &(mesh.vao));
+
 	import.FreeScene();
+	return true;
 }
+

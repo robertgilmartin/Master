@@ -2,23 +2,39 @@
 #include "Application.h"
 #include "ModuleRender.h"
 #include "ModuleWindow.h"
-
+#include "SDL.h"
 #include "GL/glew.h"
-#include "MahtGeoLib/Geometry/Frustum.h"
 #include "ModuleProgram.h"
+#include "ModuleCamera.h"
+#include "ModuleTexture.h"
+#include "Model.h"
+#include "ModuleEditor.h"
+#include "./DebugDraw/ModuleDebugDraw.h"
+#include "./DebugDraw/debugdraw.h"
+#include "Assimp/cimport.h"
+#include <iostream>
+#include "MemoryLeaks.h"
 
-ModuleRender::ModuleRender()
+
+ModuleRender::ModuleRender() :
+	MAX_FPS{ 60.0f }
+{
+
+}
+
+ModuleRender::~ModuleRender()
 {
 }
 
-// Destructor
-ModuleRender::~ModuleRender()
+void myCallback(const char* msg, char* userData)
 {
+	App->editor->Log(msg);
 }
 
 // Called before render is available
 bool ModuleRender::Init()
 {
+
 	LOG("Creating Renderer context");
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);										// desired version
@@ -27,13 +43,15 @@ bool ModuleRender::Init()
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);												// we want a double buffer
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);													// we want to have a depth buffer with 24 bits
 	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);												// we want to have a stencil buffer with 8 bits
-	
+
+
 
 	glContext = SDL_GL_CreateContext(App->window->window);
-		
+
 	glEnable(GL_DEPTH_TEST);																	// Enable depth test
 	glEnable(GL_CULL_FACE);																		// Enable cull backward faces
 	glFrontFace(GL_CCW);																		// Front faces will be counter clockwise
+
 
 
 	LOG("Vendor: %s", glGetString(GL_VENDOR));
@@ -44,7 +62,15 @@ bool ModuleRender::Init()
 	GLenum err = glewInit();
 	// … check for errors
 	LOG("Using Glew %s", glewGetString(GLEW_VERSION));
-	// Should be 2.0
+
+	//Console
+	struct aiLogStream stream;
+	stream.callback = myCallback;
+	aiAttachLogStream(&stream);
+
+	//Initial Scene
+	
+	App->model->Load("BakerHouse.fbx");
 
 	return true;
 }
@@ -57,59 +83,44 @@ update_status ModuleRender::PreUpdate()
 
 	glViewport(0, 0, width, height);
 
-	glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
+	background.x = App->editor->bGround[0];
+	background.y = App->editor->bGround[1];
+	background.z = App->editor->bGround[2];
+	background.w = App->editor->bGround[3];
+
+	glClearColor(background[0], background[1], background[2], background[3]);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	
+	program = App->program->program;
 
 	return UPDATE_CONTINUE;
 }
 
 // Called every draw update
 update_status ModuleRender::Update()
-{	
-	
-	glLineWidth(1.0f);
-	float d = 200.0f;
+{
+	float starTicks = SDL_GetTicks();
+	int w, h;
+	SDL_GetWindowSize(App->window->window, &w, &h);
 
-	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-	glBegin(GL_LINES);
-	for (float i = -d; i <= d; i += 1.0f)
+	grid.x = App->editor->gridColor[0];
+	grid.y = App->editor->gridColor[1];
+	grid.z = App->editor->gridColor[2];
+
+	App->debugDraw->Draw(App->camera->viewMatrix(), App->camera->projectionMatrix(), w, h, grid);
+
+	App->model->Draw();
+
+	//FPS
+	CalculateFPS();
+
+	float frameTicks = SDL_GetTicks() - starTicks;
+	//Limit FPS
+	if (1000.0f / MAX_FPS > frameTicks)
 	{
-		glVertex3f(i, 0.0f, -d);
-		glVertex3f(i, 0.0f, d);
-		glVertex3f(-d, 0.0f, i);
-		glVertex3f(d, 0.0f, i);
+		SDL_Delay(1000.0f / MAX_FPS - frameTicks);
 	}
-	glEnd();
-
-	glLineWidth(2.0f);
-	glBegin(GL_LINES);
-
-	// red X
-	glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
-	glVertex3f(0.0f, 0.0f, 0.0f); glVertex3f(1.0f, 0.0f, 0.0f);
-	glVertex3f(1.0f, 0.1f, 0.0f); glVertex3f(1.1f, -0.1f, 0.0f);
-	glVertex3f(1.1f, 0.1f, 0.0f); glVertex3f(1.0f, -0.1f, 0.0f);
-
-	// green Y
-	glColor4f(0.0f, 1.0f, 0.0f, 1.0f);
-	glVertex3f(0.0f, 0.0f, 0.0f); glVertex3f(0.0f, 1.0f, 0.0f);
-	glVertex3f(-0.05f, 1.25f, 0.0f); glVertex3f(0.0f, 1.15f, 0.0f);
-	glVertex3f(0.05f, 1.25f, 0.0f); glVertex3f(0.0f, 1.15f, 0.0f);
-	glVertex3f(0.0f, 1.15f, 0.0f); glVertex3f(0.0f, 1.05f, 0.0f);
-
-	// blue Z
-	glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
-	glVertex3f(0.0f, 0.0f, 0.0f); glVertex3f(0.0f, 0.0f, 1.0f);
-	glVertex3f(-0.05f, 0.1f, 1.05f); glVertex3f(0.05f, 0.1f, 1.05f);
-	glVertex3f(0.05f, 0.1f, 1.05f); glVertex3f(-0.05f, -0.1f, 1.05f);
-	glVertex3f(-0.05f, -0.1f, 1.05f); glVertex3f(0.05f, -0.1f, 1.05f);
-	glEnd();
-
-	glLineWidth(1.0f);
-
 	return UPDATE_CONTINUE;
 }
 
@@ -124,13 +135,61 @@ bool ModuleRender::CleanUp()
 {
 	LOG("Destroying renderer");
 
+	//Destroy window
+	
 	return true;
 }
 
 void ModuleRender::WindowResized(unsigned width, unsigned height)
 {
 
+}
 
+float ModuleRender::CalculateFPS()
+{
+	static const int NUM_SAMPLES = 10;
+	static float frameTimes[NUM_SAMPLES];
+	static int currentFrame = 0;
 
+	static float prevTicks = SDL_GetTicks();
+
+	float currentTicks;
+	currentTicks = SDL_GetTicks();
+
+	frameTime = currentTicks - prevTicks;
+	frameTimes[currentFrame % NUM_SAMPLES] = frameTime;
+
+	prevTicks = currentTicks;
+
+	int count;
+
+	currentFrame++;
+	if (currentFrame < NUM_SAMPLES)
+	{
+		count = currentFrame;
+	}
+	else
+	{
+		count = NUM_SAMPLES;
+	}
+
+	float frameTimeAverage = 0;
+
+	for (int i = 0; i < count; i++)
+	{
+		frameTimeAverage += frameTimes[i];
+	}
+	frameTimeAverage /= count;
+
+	if (frameTimeAverage > 0)
+	{
+		FPS = 1000.0f / frameTimeAverage;
+	}
+	else
+	{
+		FPS = 60.0f;
+	}
+
+	return FPS;
 }
 

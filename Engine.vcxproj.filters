@@ -137,7 +137,6 @@
     <ClCompile Include="DebugDraw\ModuleDebugDraw.cpp">
       <Filter>DebugDraw</Filter>
     </ClCompile>
-    <ClCompile Include="ModuleRenderExercice.cpp" />
     <ClCompile Include="ModuleCamera.cpp" />
     <ClCompile Include="ModuleEditor.cpp" />
     <ClCompile Include="ModuleTexture.cpp" />
@@ -395,7 +394,6 @@
     <ClInclude Include="DebugDraw\ModuleDebugDraw.h">
       <Filter>DebugDraw</Filter>
     </ClInclude>
-    <ClInclude Include="ModuleRenderExercice.h" />
     <ClInclude Include="ModuleCamera.h" />
     <ClInclude Include="ModuleEditor.h" />
     <ClInclude Include="ModuleTexture.h" />
@@ -426,6 +424,7 @@
       <Filter>imGUI</Filter>
     </ClInclude>
     <ClInclude Include="Point.h" />
+    <ClInclude Include="MemoryLeaks.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="MatheGeoLib">

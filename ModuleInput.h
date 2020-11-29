@@ -32,7 +32,7 @@ public:
 	bool CleanUp();	
 	
 	void DeletePreviousScene();
-	void GetModelPath(char* path);
+	void GetModelPath(const char* path);
 
 public:
 	iPoint mouse_motion;
