@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# Master
-=======
 # HomeMadeEngine
 - There are two other samples geometries at Game folder to Drag into the window or File -> Open "Object". 
 - Baker_house is automatically loaded at the start.
@@ -19,4 +16,4 @@
 - FPS graph,  hardware detection (SDL, OpenGL, Devil).
 - “About”
 - Properties: transformation, geometry and texture.
->>>>>>> 5508b89638a22c55a2f4574c847db85c63ff7b7d
+
